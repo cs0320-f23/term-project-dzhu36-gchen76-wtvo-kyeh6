@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"edu.brown.cs.student.parser"},{"l":"edu.brown.cs.student.searcher"},{"l":"edu.brown.cs.student.server"},{"l":"edu.brown.cs.student.server.censusapi"},{"l":"edu.brown.cs.student.server.censusapi.apidata"},{"l":"edu.brown.cs.student.server.csvhandling"}];updateSearchResults();

@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Server xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../apidocs/edu/brown/cs/student/server/Server.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> edu.brown.cs.student.server;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.censusapi.BroadBandHandler;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.censusapi.apidata.ApiCall;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.censusapi.apidata.CachedApiCall;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.censusapi.apidata.Query;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.csvhandling.CsvData;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.csvhandling.LoadCsvHandler;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.csvhandling.SearchCsvHandler;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.csvhandling.ViewCsvHandler;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> spark.Spark;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment"> * Top-level class that contains the main() method which starts Spark and runs the various handlers</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_javadoccomment"> * through a Server instance.</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="Server" href="../../../../../edu/brown/cs/student/server/Server.html#Server">Server</a> {
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment">   * Constructor for the Server class.</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment">   * @param apiData - a Query that will eventually retrieve broadband percentages from the ACS API</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment">   * @param csvData - a CsvData representation of the CSV data to be parsed, viewed, and searched</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>    <strong class="jxr_keyword">public</strong> <a name="Server" href="../../../../../edu/brown/cs/student/server/Server.html#Server">Server</a>(Query&lt;String, String&gt; apiData, <a name="CsvData" href="../../../../../edu/brown/cs/student/server/csvhandling/CsvData.html#CsvData">CsvData</a> csvData) {
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>      <strong class="jxr_keyword">int</strong> port = 3232;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      Spark.port(port);
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      Spark.get(<span class="jxr_string">"loadcsv"</span>, <strong class="jxr_keyword">new</strong> <a name="LoadCsvHandler" href="../../../../../edu/brown/cs/student/server/csvhandling/LoadCsvHandler.html#LoadCsvHandler">LoadCsvHandler</a>(csvData));
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      Spark.get(<span class="jxr_string">"viewcsv"</span>, <strong class="jxr_keyword">new</strong> <a name="ViewCsvHandler" href="../../../../../edu/brown/cs/student/server/csvhandling/ViewCsvHandler.html#ViewCsvHandler">ViewCsvHandler</a>(csvData));
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      Spark.get(<span class="jxr_string">"searchcsv"</span>, <strong class="jxr_keyword">new</strong> <a name="SearchCsvHandler" href="../../../../../edu/brown/cs/student/server/csvhandling/SearchCsvHandler.html#SearchCsvHandler">SearchCsvHandler</a>(csvData));
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      Spark.get(<span class="jxr_string">"broadband"</span>, <strong class="jxr_keyword">new</strong> <a name="BroadBandHandler" href="../../../../../edu/brown/cs/student/server/censusapi/BroadBandHandler.html#BroadBandHandler">BroadBandHandler</a>(apiData));
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      Spark.init();
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      Spark.awaitInitialization();
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <em class="jxr_comment">// This print statement was kept for easy access to the URL</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      System.out.println(<span class="jxr_string">"Server started at http://localhost:"</span> + port);
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>    }
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">   * The initial method called when execution begins.</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">   * @param args - an array of program arguments.</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">new</strong> <a name="Server" href="../../../../../edu/brown/cs/student/server/Server.html#Server">Server</a>(<strong class="jxr_keyword">new</strong> <a name="CachedApiCall" href="../../../../../edu/brown/cs/student/server/censusapi/apidata/CachedApiCall.html#CachedApiCall">CachedApiCall</a>(<strong class="jxr_keyword">new</strong> <a name="ApiCall" href="../../../../../edu/brown/cs/student/server/censusapi/apidata/ApiCall.html#ApiCall">ApiCall</a>(), 10, 10), <strong class="jxr_keyword">new</strong> <a name="CsvData" href="../../../../../edu/brown/cs/student/server/csvhandling/CsvData.html#CsvData">CsvData</a>());
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>    }
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023. All rights reserved.</div>
+</body>
+</html>
