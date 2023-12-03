@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>TestQuery xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../testapidocs/edu/brown/cs/student/broadbandtests/TestQuery.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> edu.brown.cs.student.broadbandtests;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertThrows;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.testng.AssertJUnit.assertEquals;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.censusapi.apidata.ApiCall;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> edu.brown.cs.student.server.censusapi.apidata.Query;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.io.EOFException;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.net.URISyntaxException;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment">/** Tests the functionality of the classes that implement the Query interface, such as ApiCall. */</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="TestQuery" href="../../../../../edu/brown/cs/student/broadbandtests/TestQuery.html#TestQuery">TestQuery</a> {
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment">   * Tests that the correct broadband is returned after making a request to the ACS API with</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">   * specific state and county identifiers.</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>    @Test
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testQueryBroadbandBasic()
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>        <strong class="jxr_keyword">throws</strong> URISyntaxException, IOException, InterruptedException {
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      Query&lt;String, String&gt; apiData = <strong class="jxr_keyword">new</strong> ApiCall();
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>      <em class="jxr_comment">// Orange County, California</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>      String broadband =
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>          apiData.query(
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>              <span class="jxr_string">"https://api.census.gov/data/2021/acs/acs1/subject/variables?get=NAME,S2802_C03_022E&amp;for=county:059&amp;in=state:06"</span>);
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      assertEquals(<span class="jxr_string">"93.0"</span>, broadband);
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <em class="jxr_comment">// Clarke County, Georgia</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      broadband =
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>          apiData.query(
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>              <span class="jxr_string">"https://api.census.gov/data/2021/acs/acs1/subject/variables?get=NAME,S2802_C03_022E&amp;for=county:059&amp;in=state:13"</span>);
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      assertEquals(<span class="jxr_string">"80.9"</span>, broadband);
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>    }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">   * Tests that an Exception is thrown when a state or county exists in the state/county APIs but</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">   * not in the ACS API.</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>    @Test
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testQueryBroadbandMissingData() {
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>      Query&lt;String, String&gt; apiData = <strong class="jxr_keyword">new</strong> ApiCall();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      <em class="jxr_comment">// Colusa County, California is in the county codes API but not in the broadband API</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>      assertThrows(
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          EOFException.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          () -&gt;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>              apiData.query(
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>                  <span class="jxr_string">"https://api.census.gov/data/2021/acs/acs1/subject/variables?get=NAME,S2802_C03_022E&amp;for=county:011&amp;in=state:06"</span>));
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>    }
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023. All rights reserved.</div>
+</body>
+</html>

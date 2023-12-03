@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+   <duplication lines="16" tokens="116">
+      <file column="5" endcolumn="3" endline="76" line="61"
+            path="/Users/gachen/Desktop/cs32/server-wanghungjen-GChen04/src/main/java/edu/brown/cs/student/searcher/Searcher.java"/>
+      <file column="5" endcolumn="3" endline="116" line="101"
+            path="/Users/gachen/Desktop/cs32/server-wanghungjen-GChen04/src/main/java/edu/brown/cs/student/searcher/Searcher.java"/>
+      <codefragment><![CDATA[    ArrayList<List<String>> output = new ArrayList<>();
+
+    for (int i = 0; i < this.parsed.size(); i++) {
+      boolean found = false;
+      for (int j = 0; j < this.parsed.get(i).size(); j++) {
+        if (this.parsed.get(i).get(j).equalsIgnoreCase(value) && j == column) {
+          found = true;
+        }
+      }
+      if (found) {
+        output.add(this.parsed.get(i));
+      }
+    }
+
+    return output;
+  }]]></codefragment>
+   </duplication>
+</pmd-cpd>

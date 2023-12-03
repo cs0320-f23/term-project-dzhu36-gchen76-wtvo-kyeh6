@@ -1,0 +1,6 @@
+edu/brown/cs/student/broadbandtests/TestQuery.class
+edu/brown/cs/student/csvhandlingtests/TestViewCsvHandler.class
+edu/brown/cs/student/csvhandlingtests/TestLoadCsvHandler.class
+edu/brown/cs/student/broadbandtests/MockQuery.class
+edu/brown/cs/student/broadbandtests/TestBroadBandHandler.class
+edu/brown/cs/student/csvhandlingtests/TestSearchCsvHandler.class

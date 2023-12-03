@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd" version="6.46.0" timestamp="2023-09-29T19:07:32.768">
+<file name="/Users/gachen/Desktop/cs32/server-wanghungjen-GChen04/src/main/java/edu/brown/cs/student/server/censusapi/BroadBandHandler.java">
+<violation beginline="68" endline="68" begincolumn="10" endcolumn="22" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.student.server.censusapi" class="BroadBandHandler" method="handle" externalInfoUrl="https://pmd.github.io/pmd-6.46.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="68" endline="68" begincolumn="29" endcolumn="42" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.student.server.censusapi" class="BroadBandHandler" method="handle" externalInfoUrl="https://pmd.github.io/pmd-6.46.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+<file name="/Users/gachen/Desktop/cs32/server-wanghungjen-GChen04/src/main/java/edu/brown/cs/student/server/csvhandling/SearchCsvHandler.java">
+<violation beginline="65" endline="65" begincolumn="10" endcolumn="48" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.student.server.csvhandling" class="SearchCsvHandler" method="handle" externalInfoUrl="https://pmd.github.io/pmd-6.46.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+</file>
+</pmd>
