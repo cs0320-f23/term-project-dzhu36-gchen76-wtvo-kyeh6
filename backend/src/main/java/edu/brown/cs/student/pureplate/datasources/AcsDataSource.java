@@ -1,4 +1,4 @@
-package edu.brown.cs.student.mapserver.datasources;
+package edu.brown.cs.student.pureplate.datasources;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;

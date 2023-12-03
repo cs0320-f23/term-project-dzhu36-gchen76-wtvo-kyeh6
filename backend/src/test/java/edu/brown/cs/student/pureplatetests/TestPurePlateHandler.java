@@ -1,4 +1,4 @@
-package edu.brown.cs.student.geodatatests;
+package edu.brown.cs.student.pureplatetests;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -17,9 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import spark.Spark;
 
 /**
- * Tests the PurePlateHandler class using mocked data.
+ * Tests the functionality of the PurePlateHandler class without using mocked data.
  */
-public class TestPurePlateHandlerMock {
+public class TestPurePlateHandler {
 
   private JsonAdapter<Map<String, Object>> adapter;
 

@@ -1,4 +1,4 @@
-package edu.brown.cs.student.mapserver.datasources;
+package edu.brown.cs.student.pureplate.datasources;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

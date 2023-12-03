@@ -1,4 +1,4 @@
-package edu.brown.cs.student.mapserver.datasources;
+package edu.brown.cs.student.pureplate.datasources;
 
 import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 import okio.Buffer;
 
-public class NutritionDataSource implements Query<String, String>{
+public class NutritionDataSource implements Query<String, String> {
 
   /**
    * Stores the data for state codes. If this is null, there will be a call to the API to get these
