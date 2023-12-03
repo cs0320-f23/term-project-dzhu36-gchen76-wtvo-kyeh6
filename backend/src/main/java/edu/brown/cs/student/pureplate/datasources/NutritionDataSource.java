@@ -10,10 +10,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import okio.Buffer;
 
@@ -34,7 +31,7 @@ public class NutritionDataSource implements Query<String, String> {
     List<List<String>> dataList =
             jsonAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
     List<String> targetRow = dataList.get(1);
-      return targetRow.get(1);
+    return targetRow.get(1);
   }
 
   /**
@@ -43,10 +40,10 @@ public class NutritionDataSource implements Query<String, String> {
    */
   private static HttpURLConnection connect(URL requestURL) throws DatasourceException, IOException {
     URLConnection urlConnection = requestURL.openConnection();
-    if (!(urlConnection instanceof HttpURLConnection)) {
+    if (!(urlConnection instanceof HttpURLConnection clientConnection)) {
       throw new DatasourceException("unexpected: result of connection wasn't HTTP");
     }
-    HttpURLConnection clientConnection = (HttpURLConnection) urlConnection; // may need to typecast
+    // may need to typecast
     clientConnection.connect();
     if (clientConnection.getResponseCode() != 200) {
       throw new DatasourceException(
@@ -92,6 +89,45 @@ public class NutritionDataSource implements Query<String, String> {
     }
   }
 
+  private List<FoodAbridged> getFoodDatabase() throws DatasourceException{
+    try (Buffer buffer = new Buffer()) {
+      Moshi moshi = new Moshi.Builder().build();
+      JsonAdapter<List<FoodAbridged>> adapter = moshi.adapter(Types.newParameterizedType(List.class, FoodAbridged.class));
+      HttpURLConnection clientConnection;
+        URL foodListURL =
+                new URL(
+                        "https",
+                        "api.nal.usda.gov",
+                        "/fdc/v1/foods/list?dataType=Foundation" +
+                                "&pageSize=200" +
+                                "&api_key=" + apikey.getKey());
+        clientConnection = connect(foodListURL);
+        List<FoodAbridged> returnList = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
+        if (returnList == null) {
+          throw new DatasourceException("Could not connect");
+        }
+        foodListURL =
+              new URL(
+                      "https",
+                      "api.nal.usda.gov",
+                      "/fdc/v1/foods/list?dataType=Foundation" +
+                              "&pageSize=200" +
+                              "&pageNumber=2" +
+                              "&api_key=" + apikey.getKey());
+        clientConnection = connect(foodListURL);
+        List<FoodAbridged> returnList2 = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
+        if (returnList2 == null) {
+          throw new DatasourceException("Could not connect");
+        }
+        returnList.addAll(returnList2);
+        clientConnection.disconnect();
+        return returnList;
+    }
+    catch (Exception e) {
+      throw new DatasourceException(e.getMessage());
+    }
+  }
+
   private double calculateBMR(
           int weight_kg, int height_cm, int age_years, String gender, String activity) {
     double caloricRequirement = 0;
@@ -100,15 +136,16 @@ public class NutritionDataSource implements Query<String, String> {
     } else if (gender.equalsIgnoreCase("female")) {
       caloricRequirement = 10 * weight_kg + 6.25 * height_cm - 5 * age_years - 161;
     }
-      return switch (activity) {
-          case "Sedentary" -> caloricRequirement * 1.2;
-          case "Lightly Active" -> caloricRequirement * 1.375;
-          case "Moderately Active" -> caloricRequirement * 1.55;
-          case "Very Active" -> caloricRequirement * 1.725;
-          case "Extra Active" -> caloricRequirement * 1.9;
-          default -> caloricRequirement;
-      };
+    return switch (activity) {
+      case "Sedentary" -> caloricRequirement * 1.2;
+      case "Lightly Active" -> caloricRequirement * 1.375;
+      case "Moderately Active" -> caloricRequirement * 1.55;
+      case "Very Active" -> caloricRequirement * 1.725;
+      case "Extra Active" -> caloricRequirement * 1.9;
+      default -> caloricRequirement;
+    };
   }
+
   public record FoodSearchCriteria(
           @Json(name = "dataType") List<String> dataType,
           @Json(name = "query") String query,
@@ -165,6 +202,26 @@ public class NutritionDataSource implements Query<String, String> {
           @Json(name = "pageList") List<Integer> pageList,
           @Json(name = "foodSearchCriteria") FoodSearchCriteria foodSearchCriteria,
           @Json(name = "foods") List<Food> foods
+  ) {
+  }
+
+  public record FoodAbridged(
+          @Json(name = "fdcId") int fdcId,
+          @Json(name = "description") String description,
+          @Json(name = "dataType") String dataType,
+          @Json(name = "publicationDate") String publicationDate,
+          @Json(name = "ndbNumber") String ndbNumber,
+          @Json(name = "foodNutrients") List<FoodNutrientAbridged> foodNutrientsAbridged
+  ) {
+  }
+
+  public record FoodNutrientAbridged(
+          @Json(name = "number") String number,
+          @Json(name = "name") String name,
+          @Json(name = "amount") double amount,
+          @Json(name = "unitName") String unitName,
+          @Json(name = "derivationCode") String derivationCode,
+          @Json(name = "derivationDescription") String derivationDescription
   ) {
   }
 }
