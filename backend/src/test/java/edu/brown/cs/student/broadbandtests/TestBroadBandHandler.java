@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.mapserver.BroadBandHandler;
 import edu.brown.cs.student.mapserver.datasources.Query;
 import java.io.IOException;
 import java.lang.reflect.Type;
