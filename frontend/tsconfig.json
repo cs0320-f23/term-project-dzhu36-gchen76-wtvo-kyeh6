@@ -16,5 +16,5 @@
     "noEmit": false,
     "jsx": "react-jsx"
   },
-  "include": ["src", "tests/Mock.spec.ts"]
+  "include": ["src", "tests/Mock.spec.ts", "src/index.d.ts"]
 }

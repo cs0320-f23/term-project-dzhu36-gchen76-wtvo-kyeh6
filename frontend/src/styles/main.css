@@ -8,52 +8,108 @@
 This here sets the repl stylistic choices.
 */
 .repl {
-    position: relative;
-    min-height: 95vh;
-  }
-  /*
+  position: relative;
+  min-height: 95vh;
+}
+/*
   This here sets the repl-history stylisitc choices.
   */
-  .repl-history {
-    height: 80vh;
-    margin: auto;
-    display: block;
-    overflow: scroll;
-  }
-  /*
+.repl-history {
+  height: 80vh;
+  margin: auto;
+  display: block;
+  overflow: scroll;
+}
+/*
   This here sets the repl-input stylistic choices.
   */
-  .repl-input {
-    margin: auto;
-    width: 90%;
-    left: 5vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-  }
-  /*
+.repl-input {
+  margin: auto;
+  width: 90%;
+  left: 5vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+/*
   This here sets the hr stylistic choices.
   */
-  .hr {
-    position: relative;
-    top: -5vh;
-    width: 120vh;
-    margin-left: -10vw;
-  }
-  /*
+.hr {
+  position: relative;
+  top: -5vh;
+  width: 120vh;
+  margin-left: -10vw;
+}
+/*
   This here sets the repl-command-box stylistic choices.
   */
-  .repl-command-box {
-    width: 90%;
-    position: relative;
-    margin: auto;
-    display: block;
-  }
-  /*
+.repl-command-box {
+  width: 90%;
+  position: relative;
+  margin: auto;
+  display: block;
+}
+/*
   This here sets the button stylistic choices.
   */
-  button {
-    margin: auto;
-    display: block;
-    position: relative;
-  }
+button {
+  font-size: 20px;
+  font-weight: 500;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  margin-right: 5%;
+  margin-top: 0%;
+  border: 0ch;
+  border-radius: 12px;
+  display: flexbox;
+  position: static;
+  color: rgb(255, 255, 255);
+  background-color: transparent;
+  transform: translate(675px, -65px);
+  text-overflow: clip;
+}
+button:hover {
+  color: rgb(48, 114, 59); /* Change text color on hover */
+}
+
+.header h1 {
+  font-weight: 500;
+  padding-top: 15px;
+  padding-left: 15px;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 25px;
+  text-align: start;
+  color: rgb(255, 255, 255);
+  background-color: #392d22;
+  position: static;
+  margin-top: 0%;
+  height: 50px;
+}
+h2 {
+  font-size: large;
+  text-overflow: ellipsis;
+  text-align: start;
+  background-color: #261b11;
+  position: static;
+  margin-top: 20%;
+}
+h3 {
+  font-size: 60px;
+  text-overflow: ellipsis;
+  text-align: start;
+  background-color: transparent;
+  position: static;
+  margin-top: 5%;
+  padding-left: 100px;
+}
+h4 {
+  font-size: large;
+  width: 400px;
+  padding-left: 100px;
+  text-overflow: ellipsis;
+  text-align: start;
+  background-color: transparent;
+  position: static;
+  margin-top: 0%;
+}
