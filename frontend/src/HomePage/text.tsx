@@ -1,24 +1,26 @@
 //will have search bar, home button, login butotn, and contact button
 
 import React from "react";
-
+//mport image from "../public/LogoP";
 const TextBox = () => {
   {
     return (
       <div className="mission statement">
+        {/* <img src={image} alt /> */}
         <h3>Our Mission</h3>
         <h4 className="mission ">
           Founded in 2023 in Providence Rhode Island by 4 Brown University
           Students, PurePlate aims to provide nutritional and gardening advice
-          to nursing homes across the world. nursing home patients are often
+          to nursing homes across the world. Nursing home patients are often
           left idle and maintain poor diets with minimal nutritional value. We
           aim to change that. Here at PurePlate we aim to encourage sustainable,
           delicious, and nutrient dense foods to senior citizens whilst also
           ensuring they maintain active throughout their senior years. Our state
           of the art application aims to recommend easy to grow vegetables to
           help nourish the aging population through a complex mathematical
-          algorithm taking into account multiple factors. Sign-up or login to
-          use the Application
+          algorithm taking into account multiple factors.
+          <br />
+          Click the Software button to begin using the software.
         </h4>
       </div>
     );

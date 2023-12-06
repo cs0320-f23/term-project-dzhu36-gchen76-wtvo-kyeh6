@@ -23,24 +23,23 @@ const Header = () => {
   {
     return (
       <div className="header">
-        {/* <img>src={logoImage}</img> */}
         <h1>
           PurePlate
           {/* <br />
           Nourshing Nutrients For All */}
+          <button className="HomeButton" onClick={handleClickHome}>
+            Home
+          </button>
+          <button className="TeamButton" onClick={handleClickTeam}>
+            Meet The Team
+          </button>
+          <button
+            className="ApplicationButton"
+            onClick={handleClickUseApplication}
+          >
+            Software
+          </button>
         </h1>
-        <button className="HomeButton" onClick={handleClickHome}>
-          Home
-        </button>
-        <button className="TeamButton" onClick={handleClickTeam}>
-          Meet The Team
-        </button>
-        <button
-          className="ApplicationButton"
-          onClick={handleClickUseApplication}
-        >
-          Application
-        </button>
       </div>
     );
   }

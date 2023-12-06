@@ -4,54 +4,6 @@
   give you this starter CSS. Feel free to modify it as you wish, though.
 */
 
-/*
-This here sets the repl stylistic choices.
-*/
-.repl {
-  position: relative;
-  min-height: 95vh;
-}
-/*
-  This here sets the repl-history stylisitc choices.
-  */
-.repl-history {
-  height: 80vh;
-  margin: auto;
-  display: block;
-  overflow: scroll;
-}
-/*
-  This here sets the repl-input stylistic choices.
-  */
-.repl-input {
-  margin: auto;
-  width: 90%;
-  left: 5vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-/*
-  This here sets the hr stylistic choices.
-  */
-.hr {
-  position: relative;
-  top: -5vh;
-  width: 120vh;
-  margin-left: -10vw;
-}
-/*
-  This here sets the repl-command-box stylistic choices.
-  */
-.repl-command-box {
-  width: 90%;
-  position: relative;
-  margin: auto;
-  display: block;
-}
-/*
-  This here sets the button stylistic choices.
-  */
 button {
   font-size: 20px;
   font-weight: 500;
@@ -62,10 +14,9 @@ button {
   border: 0ch;
   border-radius: 12px;
   display: flexbox;
-  position: static;
   color: rgb(255, 255, 255);
   background-color: transparent;
-  transform: translate(675px, -65px);
+  transform: translate(600px, 0px);
   text-overflow: clip;
 }
 button:hover {
@@ -73,6 +24,7 @@ button:hover {
 }
 
 .header h1 {
+  /* This is the header */
   font-weight: 500;
   padding-top: 15px;
   padding-left: 15px;
@@ -82,9 +34,11 @@ button:hover {
   text-align: start;
   color: rgb(255, 255, 255);
   background-color: #392d22;
-  position: static;
+  position: fixed;
   margin-top: 0%;
   height: 50px;
+  width: 100%;
+  top: 0;
 }
 h2 {
   font-size: large;
@@ -95,17 +49,20 @@ h2 {
   margin-top: 20%;
 }
 h3 {
+  /* our misison content */
   font-size: 60px;
   text-overflow: ellipsis;
   text-align: start;
   background-color: transparent;
   position: static;
-  margin-top: 5%;
+  margin-top: 10%;
   padding-left: 100px;
 }
 h4 {
+  /* our mission title */
   font-size: large;
   width: 400px;
+  padding-top: 0%;
   padding-left: 100px;
   text-overflow: ellipsis;
   text-align: start;
