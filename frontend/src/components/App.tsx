@@ -4,6 +4,7 @@ import Pagebreaker from "../Page-Breaker";
 import "../styles/App.css";
 import TextBox from "../HomePage/text";
 import Profile from "../HomePage/profile";
+
 // import grannyImage from "../public/old-woman-gardening.avif";
 
 class App extends React.Component {
