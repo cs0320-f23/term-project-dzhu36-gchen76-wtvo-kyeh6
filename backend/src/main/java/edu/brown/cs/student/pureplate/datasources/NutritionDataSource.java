@@ -4,7 +4,7 @@ import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.key.apikey;
+import edu.brown.cs.student.pureplate.key.apikey;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -53,6 +53,8 @@ public class NutritionDataSource implements Query<String, String> {
   }
 
   public Map<String, List<FoodNutrient>> getNutritionData(List<String> listFoods) throws DatasourceException {
+    // System.out.println("this is listfoods: ");
+    // System.out.println(listFoods);
     try (Buffer buffer = new Buffer()) {
       Moshi moshi = new Moshi.Builder().build();
       JsonAdapter<FoodDataResponse> adapter = moshi.adapter(FoodDataResponse.class);
@@ -73,10 +75,12 @@ public class NutritionDataSource implements Query<String, String> {
                                 "&api_key=" + apikey.getKey() +
                                 "&query=" + food.replace(" ", "%20"));
         clientConnection = connect(foodURL);
-        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
+        // System.out.println("before record conversion");
+        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream())); //source of DatasourceException
+        // System.out.println("after record conversion");
         if (response == null) {
           continue;
-        } else if (response.foods == null || response.foods.get(0) == null) {
+        } else if (response.foods == null || response.foods.isEmpty()) { //response.foods.get(0) == null
           returnMap.put(food, new ArrayList<>());
         } else {
           returnMap.put(response.foods.get(0).description, response.foods.get(0).foodNutrients);
@@ -128,7 +132,8 @@ public class NutritionDataSource implements Query<String, String> {
     }
   }
 
-  private double calculateBMR(
+  // public for testing purposes
+  public double calculateCaloricRequirement(
           int weight_kg, int height_cm, int age_years, String gender, String activity) {
     double caloricRequirement = 0;
     if (gender.equalsIgnoreCase("male")) {
@@ -174,8 +179,8 @@ public class NutritionDataSource implements Query<String, String> {
           @Json(name = "foodNutrientSourceDescription") String foodNutrientSourceDescription,
           @Json(name = "rank") int rank,
           @Json(name = "indentLevel") int indentLevel,
-          @Json(name = "foodNutrientId") int foodNutrientId,
-          @Json(name = "dataPoints") int dataPoints
+          @Json(name = "foodNutrientId") int foodNutrientId
+          //@Json(name = "dataPoints") int dataPoints
   ) {
   }
 
