@@ -3,6 +3,7 @@ import Header from "../Header";
 import Pagebreaker from "../Page-Breaker";
 import "../styles/App.css";
 import TextBox from "../HomePage/text";
+import Profile from "../HomePage/profile";
 // import grannyImage from "../public/old-woman-gardening.avif";
 
 class App extends React.Component {
@@ -13,6 +14,7 @@ class App extends React.Component {
         <>
           <TextBox></TextBox>
           <Pagebreaker></Pagebreaker>
+          <Profile></Profile>
         </>
         <div className="app-content">{/* Your main content goes here */}</div>
       </div>

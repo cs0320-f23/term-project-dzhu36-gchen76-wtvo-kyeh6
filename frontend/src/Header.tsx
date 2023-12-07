@@ -23,7 +23,7 @@ const Header = () => {
   {
     return (
       <div className="header">
-        <h1>
+        <h1 id="headerbar">
           PurePlate
           {/* <br />
           Nourshing Nutrients For All */}

@@ -17,13 +17,12 @@ button {
   color: rgb(255, 255, 255);
   background-color: transparent;
   transform: translate(600px, 0px);
-  text-overflow: clip;
 }
 button:hover {
-  color: rgb(48, 114, 59); /* Change text color on hover */
+  color: rgb(62, 142, 75); /* Change text color on hover */
+  cursor: pointer;
 }
-
-.header h1 {
+#headerbar {
   /* This is the header */
   font-weight: 500;
   padding-top: 15px;
@@ -39,6 +38,48 @@ button:hover {
   height: 50px;
   width: 100%;
   top: 0;
+  z-index: 1000;
+}
+#Daniel {
+  font-size: large;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  transform: translate(100px, -50px);
+}
+#Kyle {
+  font-size: large;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  transform: translate(400px, -128px);
+}
+#Grace {
+  font-size: large;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  transform: translate(100px, 50px);
+}
+#Wilson {
+  font-size: large;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  transform: translate(400px, -28px);
+}
+#MeetTheTeam {
+  font-size: 60px;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  transform: translate(250px, -170px);
+  padding-right: 100px;
 }
 h2 {
   font-size: large;
@@ -49,8 +90,11 @@ h2 {
   margin-top: 20%;
 }
 h3 {
-  /* our misison content */
+  /* our mission title */
+
   font-size: 60px;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   text-overflow: ellipsis;
   text-align: start;
   background-color: transparent;
@@ -59,8 +103,10 @@ h3 {
   padding-left: 100px;
 }
 h4 {
-  /* our mission title */
+  /* our misison content */
   font-size: large;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   width: 400px;
   padding-top: 0%;
   padding-left: 100px;

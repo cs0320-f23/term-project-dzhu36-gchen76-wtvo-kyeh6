@@ -1,7 +1,9 @@
 body {
   margin: 0;
   font-family: "Megrim", sans-serif;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 .app-content {

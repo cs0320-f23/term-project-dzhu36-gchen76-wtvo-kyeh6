@@ -1,12 +1,12 @@
 //will have search bar, home button, login butotn, and contact button
 
 import React from "react";
-//mport image from "../public/LogoP";
+// const grannyImage = require("../public/old-woman-gardening.avif");
 const TextBox = () => {
   {
     return (
       <div className="mission statement">
-        {/* <img src={image} alt /> */}
+        {/* <img src={grannyImage} /> */}
         <h3>Our Mission</h3>
         <h4 className="mission ">
           Founded in 2023 in Providence Rhode Island by 4 Brown University
