@@ -8,11 +8,21 @@ interface HeaderProps {}
 function handleClickHome() {
   // Logic to handle the "Home" button click
   console.log("Home button clicked");
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "smooth",
+  });
 }
 
 function handleClickTeam() {
   // Logic to handle the "Team" button click
   console.log("Team button clicked");
+  window.scrollTo({
+    top: 600,
+    left: 0,
+    behavior: "smooth",
+  });
 }
 
 function handleClickUseApplication() {
