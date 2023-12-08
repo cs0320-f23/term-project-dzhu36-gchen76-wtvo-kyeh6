@@ -221,7 +221,7 @@ public class NutritionDataSource implements Query<String, String> {
    * @return
    * @throws DatasourceException
    */
-  private double calculateCaloricRequirement(
+  public double calculateCaloricRequirement(
           double weight_kg, int height_cm, int age_years, String gender, String activity)
       throws DatasourceException {
     if (weight_kg < 0 || height_cm < 0 || age_years < 0) {
@@ -269,7 +269,11 @@ public class NutritionDataSource implements Query<String, String> {
   }
 
   public Map<String, Map<String, Double>> getFoodData () {
-    return this.foodData;
+    return new HashMap<>(this.foodData);
+  }
+
+  public Map<String, Double> getNutritionNeeds() {
+    return new HashMap<>(this.nutritionNeeds);
   }
 
 //  public record FoodSearchCriteria(

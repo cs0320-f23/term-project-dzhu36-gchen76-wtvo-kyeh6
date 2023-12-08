@@ -19,13 +19,37 @@ public class TestNutritionDataSource {
     Map<String, Map<String, Double>> foodData = dataSource.getFoodData();
     Assert.assertEquals(foodData.size(), 265);
 
-    // Test a bunch of food descriptions
+    // Food descriptions as keys
+    Assert.assertTrue(foodData.containsKey("Carrots, baby, raw"));
+    Assert.assertTrue(foodData.containsKey("Tomato, roma")); // 104 instead of 105
+    Assert.assertTrue(foodData.containsKey("Pork, loin, boneless, raw"));
+    Assert.assertFalse(foodData.containsKey("not in database"));
+    Assert.assertFalse(foodData.containsKey("carrot")); // not a food description
 
-    // Test map stuff -- nutrient name and amount (key-value) in foodNutrientsAbridged per food
-    System.out.println(foodData);
-    System.out.println(foodData.size());
+    // Map w/ nutrient name keys and amount values per food description key
+    Map<String, Double> carrotNutrients = foodData.get("Carrots, baby, raw");
+    Assert.assertEquals(carrotNutrients.size(), 25);
+    Assert.assertEquals(carrotNutrients.get("Iron, Fe"), 0.088);
+    Assert.assertEquals(carrotNutrients.get("Magnesium, Mg"), 11.1);
 
+    Map<String, Double> tomatoNutrients = foodData.get("Tomato, roma");
+    Assert.assertEquals(tomatoNutrients.size(), 37);
+    Assert.assertEquals(tomatoNutrients.get("Phosphorus, P"), 19.1);
+    Assert.assertEquals(tomatoNutrients.get("Vitamin C, total ascorbic acid"), 17.8);
+
+    Map<String, Double> porkNutrients = foodData.get("Pork, loin, boneless, raw");
+    Assert.assertEquals(porkNutrients.size(), 22);
+    Assert.assertEquals(porkNutrients.get("Sodium, Na"), 40.2);
+    Assert.assertEquals(porkNutrients.get("Fatty acids, total saturated"), 3.28);
+
+    Assert.assertThrows(NullPointerException.class, () -> foodData.get("not in database").get("Sodium, Na"));
+    Assert.assertThrows(NullPointerException.class, () -> foodData.get("carrot").get("Iron, Fe"));
   }
+
+//  @Test
+//  public void testQuery() throws DatasourceException {
+//  }
+
 
 //  /**
 //   * Tests the functionality of the getNutritionData method.
