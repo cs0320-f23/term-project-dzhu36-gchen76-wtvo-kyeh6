@@ -6,14 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {}
 
-// let navigate = useNavigate();
-// const routeChange = () => {
-//   let path = `newPath`; //change url path here
-//   navigate(path);
-// };
+// const navigate = useNavigate();
 
 function handleClickHome() {
   // Logic to handle the "Home" button click
+  // if window.
   console.log("Home button clicked");
   window.scrollTo({
     top: 0,
@@ -39,6 +36,8 @@ function handleClickUseApplication() {
 }
 const Header = () => {
   {
+    const navigate = useNavigate();
+
     return (
       <div className="header">
         <h1 id="headerbar">
@@ -53,7 +52,7 @@ const Header = () => {
           </button>
           <button
             className="ApplicationButton"
-            onClick={handleClickUseApplication}
+            onClick={() => navigate("software")}
           >
             Software
           </button>

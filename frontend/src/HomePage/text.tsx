@@ -9,7 +9,7 @@ const TextBox = () => {
         {/* <img src={grannyImage} /> */}
         <h3>Our Mission</h3>
         <h4 className="mission ">
-          Founded in 2023 in Providence Rhode Island by 4 Brown University
+          Founded in 2023 in Providence, Rhode Island by 4 Brown University
           Students, PurePlate aims to provide nutritional and gardening advice
           to nursing homes across the world. Nursing home patients are often
           left idle and maintain poor diets with minimal nutritional value. We
