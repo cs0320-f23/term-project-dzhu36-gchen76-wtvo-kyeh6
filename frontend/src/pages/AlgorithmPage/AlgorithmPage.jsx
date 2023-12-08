@@ -1,6 +1,7 @@
 //will have name of patient box, age box, and weight box
 import React from "react";
 import Header from "../../Header";
+import SearchHistory from "./SearchHistory";
 
 // import React, { ChangeEvent } from "react";
 
@@ -26,11 +27,27 @@ function AlgorithmPage() {
     return (
       <div className="AlgorithmPage">
         <Header />
+        <SearchHistory />
         <h1 className="Age">Age</h1>
         <h1 className="Gender">Gender</h1>
-        <h1 className="Weight">Weight</h1>
+        <h1 className="Weight">Weight (kg)</h1>
         <h1 className="Activity-Level">Activity Level</h1>
-        <h1 className="Height">Height</h1>
+        <h1 className="Height">Height (m)</h1>
+
+        <h1 class="Weight-container">
+          <input id="txtbx2"></input>
+          <label for="txtbx2"> </label>
+        </h1>
+
+        <h1 class="Height-container">
+          <input id="txtbx2"></input>
+          <label for="txtbx2"> </label>
+        </h1>
+
+        <h1 class="age-container">
+          <input id="txtbx1"></input>
+          <label for="txtbx1"> </label>
+        </h1>
 
         <h1 class="gender-container">
           <input type="checkbox" id="cb4"></input>
@@ -54,6 +71,7 @@ function AlgorithmPage() {
           <input type="checkbox" id="cb3"></input>
           <label for="cb3"> High </label>
         </h1>
+
         {/* </select> */}
 
         {/* <div id="list1" class="dropdown-check-list" tabindex="100">

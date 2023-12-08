@@ -203,7 +203,9 @@ h4 {
 
 .activity-level-container {
   display: inline-block;
-  transform: translate(-25px, 300px);
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  transform: translate(-445px, 225px);
 }
 .activity-level-container label {
   cursor: pointer;
@@ -216,19 +218,26 @@ input [type="checkbox"] :checked {
   font-size: larger;
 }
 .Activity-Level {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(100px, 400px);
+  transform: translate(140px, 330px);
 }
 
+/* GENDER */
 .Gender {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(150px, 400px);
+  transform: translate(180px, 360px);
 }
 .gender-container {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  transform: translate(130px, 200px);
+  transform: translate(-280px, 135px);
 }
 .gender-container label {
   cursor: pointer;
@@ -241,6 +250,80 @@ input [type="checkbox"] :checked {
   font-size: larger;
 }
 
+/* AGE */
+.Age {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  width: 400px;
+  transform: translate(200px, 320px);
+}
+
+.age-container {
+  display: inline-block;
+  transform: translate(-127px, 40px);
+}
+.age-container label {
+  cursor: pointer;
+  font-size: medium;
+}
+.age-container input {
+  cursor: pointer;
+}
+
+.Height {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  width: 400px;
+  transform: translate(165px, 0px);
+}
+
+.Height-container {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  display: inline-block;
+  transform: translate(20px, -50px);
+}
+.Height-container label {
+  cursor: pointer;
+  font-size: medium;
+}
+.Height-container input {
+  cursor: pointer;
+}
+
+.Weight {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  width: 400px;
+  transform: translate(165px, 0px);
+}
+
+.Weight-container {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  display: inline-block;
+  transform: translate(167px, -150px);
+}
+.Weight-container label {
+  cursor: pointer;
+  font-size: medium;
+}
+.Weight-container input {
+  cursor: pointer;
+}
+
+.searchHistory {
+  font-weight: 500;
+  font-size: 40px;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  width: 400px;
+  transform: translate(750px, 100px);
+}
 /* .dropdown-check-list {
   display: inline-block;
 }

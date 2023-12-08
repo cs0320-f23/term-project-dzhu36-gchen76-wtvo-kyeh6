@@ -10,8 +10,9 @@ interface HeaderProps {}
 
 function handleClickHome() {
   // Logic to handle the "Home" button click
-  // if window.
-  console.log("Home button clicked");
+  if (window.location.href == "http://localhost:8000/software") {
+    window.location.href = "http://localhost:8000";
+  }
   window.scrollTo({
     top: 0,
     left: 0,
@@ -21,22 +22,31 @@ function handleClickHome() {
 
 function handleClickTeam() {
   // Logic to handle the "Team" button click
-  console.log("Team button clicked");
+  // if (window.location.href == "http://localhost:8000/software") {
+  //   window.location.href = "http://localhost:8000";
+  //   window.scrollTo({
+  //     top: 600,
+  //     left: 0,
+  //     behavior: "smooth",
+  //   });
+  // } else if ((window.location.href = "http://localhost:8000")) {
   window.scrollTo({
     top: 600,
     left: 0,
     behavior: "smooth",
   });
 }
+// }
 
-function handleClickUseApplication() {
-  // Logic to handle the "Use Application" button click
-  console.log("Use Application button clicked");
-  // routeChange; //calls the change in route
-}
+// function handleClickUseApplication() {
+//   // Logic to handle the "Use Application" button click
+//   console.log("Use Application button clicked");
+//   // routeChange; //calls the change in route
+// }
 const Header = () => {
   {
     const navigate = useNavigate();
+    // globalThis.navigate;
 
     return (
       <div className="header">
