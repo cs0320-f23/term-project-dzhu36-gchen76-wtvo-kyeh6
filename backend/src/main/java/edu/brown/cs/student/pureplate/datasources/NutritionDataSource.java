@@ -4,7 +4,7 @@ import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.key.apikey;
+import edu.brown.cs.student.pureplate.key.apikey;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -76,7 +76,7 @@ public class NutritionDataSource implements Query<String, String> {
         FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
         if (response == null) {
           continue;
-        } else if (response.foods == null || response.foods.get(0) == null) {
+        } else if (response.foods == null || response.foods.isEmpty()) { //response.foods.get(0) == null
           returnMap.put(food, new ArrayList<>());
         } else {
           returnMap.put(response.foods.get(0).description, response.foods.get(0).foodNutrients);
@@ -128,8 +128,13 @@ public class NutritionDataSource implements Query<String, String> {
     }
   }
 
-  private double calculateBMR(
-          int weight_kg, int height_cm, int age_years, String gender, String activity) {
+  // public for testing purposes
+  public double calculateCaloricRequirement(
+          int weight_kg, int height_cm, int age_years, String gender, String activity)
+      throws DatasourceException {
+    if (weight_kg < 0 || height_cm < 0 || age_years < 0) {
+      throw new DatasourceException("Measurement is negative");
+    }
     double caloricRequirement = 0;
     if (gender.equalsIgnoreCase("male")) {
       caloricRequirement = 10 * weight_kg + 6.25 * height_cm - 5 * age_years + 5;
@@ -174,8 +179,8 @@ public class NutritionDataSource implements Query<String, String> {
           @Json(name = "foodNutrientSourceDescription") String foodNutrientSourceDescription,
           @Json(name = "rank") int rank,
           @Json(name = "indentLevel") int indentLevel,
-          @Json(name = "foodNutrientId") int foodNutrientId,
-          @Json(name = "dataPoints") int dataPoints
+          @Json(name = "foodNutrientId") int foodNutrientId
+          //@Json(name = "dataPoints") int dataPoints
   ) {
   }
 
