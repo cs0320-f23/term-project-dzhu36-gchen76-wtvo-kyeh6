@@ -75,19 +75,17 @@ public class TestNutritionDataSource {
     Assert.assertTrue(nutrients.isEmpty());
   }
 
-  // test method calculatecaloricrequirement
-  // vary weight, height, age, and gender -- should have checks for weight, age, height (e.g. if negative?) --> throw exception?
-  // Upper and lowercase gender
-  // case activity not listed
-
   /**
    * Tests the functionality of the calculateCaloricRequirement method.
    */
   @Test
-  public void testCalculateCaloricRequirement() {
+  public void testCalculateCaloricRequirement() throws DatasourceException {
     NutritionDataSource dataSource = new NutritionDataSource();
 
-    // what to do if negative height, weight, or age? Maybe throw an exception, but should be DataSource exception?
+    // Negative weight, height, and age
+    Assert.assertThrows(DatasourceException.class, () -> dataSource.calculateCaloricRequirement(-80, 175, 25, "male", "unknown"));
+    Assert.assertThrows(DatasourceException.class, () -> dataSource.calculateCaloricRequirement(80, -175, 25, "male", "unknown"));
+    Assert.assertThrows(DatasourceException.class, () -> dataSource.calculateCaloricRequirement(80, 175, -25, "male", "unknown"));
 
     // Vary weight
     double caloricRequirement = dataSource.calculateCaloricRequirement(80, 175, 25, "male", "unknown");
@@ -142,5 +140,4 @@ public class TestNutritionDataSource {
     caloricRequirement = dataSource.calculateCaloricRequirement(50, 160, 30, "female", "asdfghjkl");
     Assert.assertEquals(caloricRequirement, 10 * 50 + 6.25 * 160 - 5 * 30 - 161);
   }
-
 }

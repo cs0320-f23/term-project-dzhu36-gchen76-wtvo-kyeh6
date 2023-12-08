@@ -53,8 +53,6 @@ public class NutritionDataSource implements Query<String, String> {
   }
 
   public Map<String, List<FoodNutrient>> getNutritionData(List<String> listFoods) throws DatasourceException {
-    // System.out.println("this is listfoods: ");
-    // System.out.println(listFoods);
     try (Buffer buffer = new Buffer()) {
       Moshi moshi = new Moshi.Builder().build();
       JsonAdapter<FoodDataResponse> adapter = moshi.adapter(FoodDataResponse.class);
@@ -75,9 +73,7 @@ public class NutritionDataSource implements Query<String, String> {
                                 "&api_key=" + apikey.getKey() +
                                 "&query=" + food.replace(" ", "%20"));
         clientConnection = connect(foodURL);
-        // System.out.println("before record conversion");
-        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream())); //source of DatasourceException
-        // System.out.println("after record conversion");
+        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
         if (response == null) {
           continue;
         } else if (response.foods == null || response.foods.isEmpty()) { //response.foods.get(0) == null
@@ -134,7 +130,11 @@ public class NutritionDataSource implements Query<String, String> {
 
   // public for testing purposes
   public double calculateCaloricRequirement(
-          int weight_kg, int height_cm, int age_years, String gender, String activity) {
+          int weight_kg, int height_cm, int age_years, String gender, String activity)
+      throws DatasourceException {
+    if (weight_kg < 0 || height_cm < 0 || age_years < 0) {
+      throw new DatasourceException("Measurement is negative");
+    }
     double caloricRequirement = 0;
     if (gender.equalsIgnoreCase("male")) {
       caloricRequirement = 10 * weight_kg + 6.25 * height_cm - 5 * age_years + 5;
