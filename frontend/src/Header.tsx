@@ -2,8 +2,15 @@
 
 import React from "react";
 //import logoImage from "./public/LogoP.png";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {}
+
+// let navigate = useNavigate();
+// const routeChange = () => {
+//   let path = `newPath`; //change url path here
+//   navigate(path);
+// };
 
 function handleClickHome() {
   // Logic to handle the "Home" button click
@@ -28,6 +35,7 @@ function handleClickTeam() {
 function handleClickUseApplication() {
   // Logic to handle the "Use Application" button click
   console.log("Use Application button clicked");
+  // routeChange; //calls the change in route
 }
 const Header = () => {
   {

@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     element: <App></App>,
   },
   {
-    path: "Algorithm",
+    path: "software",
     element: <AlgorithmPage></AlgorithmPage>,
   },
 ]);
