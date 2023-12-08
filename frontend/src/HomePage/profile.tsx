@@ -10,8 +10,7 @@ const Profile = () => {
   {
     return (
       <div className="Team Descriptions">
-        {/* <img src={grannyImage} /> */}
-        <h3 id="MeetTheTeam">Meet The Team</h3>x
+        <h3 id="MeetTheTeam">Meet The Team</h3> <br />
         <h1 id="Daniel">
           Daniel Zhu <br />
           Backend Developer <br />

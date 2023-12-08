@@ -6,7 +6,7 @@ import TextBox from "../HomePage/text";
 import Profile from "../HomePage/profile";
 
 import granImage from "../public/gardening.png";
-import pot from "../public/potted-plant.jpg";
+import pot from "../public/6360237.jpg";
 
 class App extends React.Component {
   render() {
@@ -16,6 +16,10 @@ class App extends React.Component {
 
         <div className="granny-image-container">
           <img id="grannyImage " src={granImage} />
+        </div>
+
+        <div className="potted-plant-image-container">
+          <img id="pottedPlant " src={pot} />
         </div>
 
         <>

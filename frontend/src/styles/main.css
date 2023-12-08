@@ -122,6 +122,20 @@ h4 {
   height: 25px;
   width: 25px;
 }
+.potted-plant-image-container {
+  margin: auto;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 750px;
+  left: 0x;
+}
+.potted-plant-image-container #pottedPlant {
+  border-radius: 30%;
+  width: auto;
+  height: auto;
+}
+
 .granny-image-container {
   margin: auto;
   width: 170px;
