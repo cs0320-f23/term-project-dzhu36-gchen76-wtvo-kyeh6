@@ -5,6 +5,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.json.simple.parser.ParseException;
 
@@ -34,9 +36,14 @@ public class Cache implements Query<String, String> {
             .recordStats()
             .build(
                 new CacheLoader<>() {
+//                  @Override
+//                  public List<String> load(List<String> strings) throws Exception {
+//                    return null;
+//                  }
+
                   @Override
                   public String load(String key)
-                      throws URISyntaxException, IOException, InterruptedException, ParseException {
+                      throws URISyntaxException, IOException, InterruptedException, ParseException, DatasourceException {
                     // We kept this print statement to aid our caching demo
                     System.out.println("called load for: " + key);
                     return wrappedSearcher.query(key);

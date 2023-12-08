@@ -1,3 +1,3 @@
-gender,Calorie Level Assessed,Protein (% kcal),Protein (g),Carbohydrate (% kcal),Carbohydrate (g),Fiber (g),Added Sugars (% kcal),Total lipid (% kcal),Saturated Fatty Acids (% kcal),Calcium (mg),Iron (mg),Magnesium (mg),Phosphorus (mg),Potassium (mg),Sodium (mg),Zinc (mg),Vitamin A (mcg RAE),Vitamin E (mg AT),Vitamin D (IU),Vitamin C (mg),Thiamin (mg),Riboflavin (mg),Niacin (mg),Vitamin B-6 (mg),Vitamin B-12 (mcg),Choline (mg),Vitamin K (mcg),Folate (mcg DFE)
-Male,2000,10-35,56,45-65,130,28,<10,20-35,<10,14,1.6,1200,8,320,700,2600,2300,11,700,15,800,90,1.1,1.3,14,1.7,2.4,425,400
-Female,1600,10-35,46,45-65,130,22,<10,20-35,<10,11,1.1,1000,8,320,700,2600,2300,8,700,15,800,75,1.1,1.1,14,1.5,2.4,425,400
+gender,Calorie Level Assessed,Protein (g),Carbohydrate (g),Fiber (g),Added Sugars (% kcal),Saturated Fatty Acids (% kcal),Calcium (mg),Iron (mg),Magnesium (mg),Phosphorus (mg),Potassium (mg),Sodium (mg),Zinc (mg),Vitamin A (mcg RAE),Vitamin E (mg AT),Vitamin D (IU),Vitamin C (mg),Thiamin (mg),Riboflavin (mg),Niacin (mg),Vitamin B-6 (mg),Vitamin B-12 (mcg),Choline (mg),Vitamin K (mcg),Folate (mcg DFE)
+Male,2000,56,130,28,0,0,1200,8,420,700,3400,2300,11,900,15,800,90,1.2,1.3,16,1.7,2.4,550,120,400
+Female,1600,46,130,22,0,0,1000,8,320,700,2600,2300,8,700,15,800,75,1.1,1.1,14,1.5,2.4,425,90,400

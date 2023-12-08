@@ -40,6 +40,7 @@ public class PurePlateHandler implements Route {
     for(String param : params) {
       results.put(param, request.queryParams(param));
     }
+
     return this.serialize(results);
   }
 
