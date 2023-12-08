@@ -2,7 +2,12 @@ package edu.brown.cs.student.pureplate;
 
 import static spark.Spark.after;
 
+import edu.brown.cs.student.pureplate.datasources.Cache;
+import edu.brown.cs.student.pureplate.datasources.DatasourceException;
+import edu.brown.cs.student.pureplate.datasources.NutritionDataSource;
+import edu.brown.cs.student.pureplate.datasources.Query;
 import java.io.IOException;
+import java.util.Map;
 import spark.Spark;
 
 /**
@@ -14,7 +19,7 @@ public class PurePlateServer {
   /**
    * Constructor for the PurePlateServer class.
    */
-  public PurePlateServer() {
+  public PurePlateServer(Query<String, String> cache) {
     int port = 3233;
 
     Spark.port(port);
@@ -36,7 +41,7 @@ public class PurePlateServer {
    *
    * @param args - an array of program arguments.
    */
-  public static void main(String[] args) throws IOException {
-    new PurePlateServer();
+  public static void main(String[] args) {
+    new PurePlateServer(new Cache(new NutritionDataSource(), 100, 1000));
   }
 }

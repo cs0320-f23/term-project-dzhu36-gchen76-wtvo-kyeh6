@@ -27,5 +27,5 @@ public interface Query<RESULT, TARGET> {
    * @throws InterruptedException if a query is interrupted
    */
   RESULT query(TARGET target)
-      throws URISyntaxException, IOException, InterruptedException, ParseException;
+      throws URISyntaxException, IOException, InterruptedException, ParseException, DatasourceException;
 }

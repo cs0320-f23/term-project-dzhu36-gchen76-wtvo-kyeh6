@@ -2,11 +2,11 @@ package edu.brown.cs.student.pureplate.datasources;
 
 import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.pureplate.key.apikey;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -19,19 +19,45 @@ public class NutritionDataSource implements Query<String, String> {
   /**
    * Stores the data for state codes. If this is null, there will be a call to the API to get these
    */
-  HashMap<String, String> statesWithCode = null;
+  private static Map<String, Map<String, Double>> nutritionalRequirements;
+  private Map<String, Double> nutritionNeeds;
+  private Map<String, Map<String, Double>> foodData;
 
-  public String query(String target) throws IOException {
-    Moshi moshi = new Moshi.Builder().build();
-    Type listStrings = Types.newParameterizedType(List.class, List.class, String.class);
-    JsonAdapter<List<List<String>>> jsonAdapter = moshi.adapter(listStrings);
-    URL requestUrl = new URL(target);
-    HttpURLConnection clientConnection = (HttpURLConnection) requestUrl.openConnection();
-    clientConnection.connect();
-    List<List<String>> dataList =
-            jsonAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
-    List<String> targetRow = dataList.get(1);
-    return targetRow.get(1);
+  public NutritionDataSource() {
+    try {
+      this.foodData = new HashMap<>();
+      this.nutritionNeeds = new HashMap<>();
+      this.getFoodDatabase();
+      CsvParser parser = new CsvParser();
+      parser.parse("data/nutrition/daily_requirements.csv");
+      nutritionalRequirements = parser.getTable();
+    } catch (DatasourceException e) {
+      nutritionalRequirements = new HashMap<>();
+    }
+  }
+
+
+  public String query(String target) throws DatasourceException {
+      // get parameters
+//      Moshi moshi = new Moshi.Builder().build();
+//      Type listStrings = Types.newParameterizedType(List.class, List.class, String.class);
+//      JsonAdapter<List<List<String>>> jsonAdapter = moshi.adapter(listStrings);
+//      URL requestUrl = new URL(target);
+//      HttpURLConnection clientConnection = (HttpURLConnection) requestUrl.openConnection();
+//      clientConnection.connect();
+//      List<List<String>> dataList =
+//          jsonAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+//      List<String> targetRow = dataList.get(1);
+      // Calculate Caloric Requirement
+      // Update nutritionNeeds based on the article and guidelines
+      // Calculate Deficiencies
+      for (String foodKey : this.foodData.keySet()) {
+        for (String key : this.foodData.get(foodKey).keySet()) {
+          this.nutritionNeeds.put(key,
+              nutritionalRequirements.get(foodKey).get(key) - this.foodData.get(foodKey).get(key));
+        }
+      }
+      return this.nutritionNeeds.toString();
   }
 
   /**
@@ -52,44 +78,45 @@ public class NutritionDataSource implements Query<String, String> {
     return clientConnection;
   }
 
-  public Map<String, List<FoodNutrient>> getNutritionData(List<String> listFoods) throws DatasourceException {
-    try (Buffer buffer = new Buffer()) {
-      Moshi moshi = new Moshi.Builder().build();
-      JsonAdapter<FoodDataResponse> adapter = moshi.adapter(FoodDataResponse.class);
-      Map<String, List<FoodNutrient>> returnMap = new HashMap<>();
-      HttpURLConnection clientConnection;
-      if (listFoods.isEmpty()) {
-        throw new DatasourceException("Food list empty");
-      }
-      for (String food : listFoods) {
-        URL foodURL =
-                new URL(
-                        "https",
-                        "api.nal.usda.gov",
-                        "/fdc/v1/foods/search?dataType=Foundation" +
-                                "&sortBy=dataType.keyword" +
-                                "&pageSize=1" +
-                                "&sortOrder=asc" +
-                                "&api_key=" + apikey.getKey() +
-                                "&query=" + food.replace(" ", "%20"));
-        clientConnection = connect(foodURL);
-        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
-        if (response == null) {
-          continue;
-        } else if (response.foods == null || response.foods.isEmpty()) { //response.foods.get(0) == null
-          returnMap.put(food, new ArrayList<>());
-        } else {
-          returnMap.put(response.foods.get(0).description, response.foods.get(0).foodNutrients);
-        }
-        clientConnection.disconnect();
-      }
-      return returnMap;
-    } catch (Exception e) {
-      throw new DatasourceException(e.getMessage());
-    }
-  }
+//  public Map<String, List<FoodNutrient>> getNutritionData(List<String> listFoods) throws DatasourceException {
+//    try (Buffer buffer = new Buffer()) {
+//      Moshi moshi = new Moshi.Builder().build();
+//      JsonAdapter<FoodDataResponse> adapter = moshi.adapter(FoodDataResponse.class);
+//      Map<String, List<FoodNutrient>> returnMap = new HashMap<>();
+//      HttpURLConnection clientConnection;
+//      if (listFoods.isEmpty()) {
+//        throw new DatasourceException("Food list empty");
+//      }
+//      for (String food : listFoods) {
+//        URL foodURL =
+//                new URL(
+//                        "https",
+//                        "api.nal.usda.gov",
+//                        "/fdc/v1/foods/search?dataType=Foundation" +
+//                                "&sortBy=dataType.keyword" +
+//                                "&pageSize=1" +
+//                                "&sortOrder=asc" +
+//                                "&api_key=" + apikey.getKey() +
+//                                "&query=" + food.replace(" ", "%20"));
+//        clientConnection = connect(foodURL);
+//        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
+//        if (response == null) {
+//          continue;
+//        } else if (response.foods == null || response.foods.isEmpty()) { //response.foods.get(0) == null
+//          returnMap.put(food, new ArrayList<>());
+//        } else {
+//          returnMap.put(response.foods.get(0).description, response.foods.get(0).foodNutrients);
+//        }
+//        clientConnection.disconnect();
+//      }
+//      return returnMap;
+//    } catch (Exception e) {
+//      throw new DatasourceException(e.getMessage());
+//    }
+//  }
 
-  private List<FoodAbridged> getFoodDatabase() throws DatasourceException{
+  // made public for unit testing
+  public void getFoodDatabase() throws DatasourceException{
     try (Buffer buffer = new Buffer()) {
       Moshi moshi = new Moshi.Builder().build();
       JsonAdapter<List<FoodAbridged>> adapter = moshi.adapter(Types.newParameterizedType(List.class, FoodAbridged.class));
@@ -120,10 +147,16 @@ public class NutritionDataSource implements Query<String, String> {
           throw new DatasourceException("Could not connect");
         }
         returnList.addAll(returnList2);
+        for (FoodAbridged food : returnList) {
+          Map<String, Double> nutrientAmount = new HashMap<>();
+          for (FoodNutrientAbridged nutrient : food.foodNutrientsAbridged) {
+            nutrientAmount.put(nutrient.name, nutrient.amount);
+            foodData.put(food.description, nutrientAmount);
+          }
+        }
         clientConnection.disconnect();
-        return returnList;
     }
-    catch (Exception e) {
+    catch (IOException | NullPointerException e) {
       throw new DatasourceException(e.getMessage());
     }
   }
@@ -151,64 +184,77 @@ public class NutritionDataSource implements Query<String, String> {
     };
   }
 
-  public record FoodSearchCriteria(
-          @Json(name = "dataType") List<String> dataType,
-          @Json(name = "query") String query,
-          @Json(name = "generalSearchInput") String generalSearchInput,
-          @Json(name = "pageNumber") int pageNumber,
-          @Json(name = "sortBy") String sortBy,
-          @Json(name = "sortOrder") String sortOrder,
-          @Json(name = "numberOfResultsPerPage") int numberOfResultsPerPage,
-          @Json(name = "pageSize") int pageSize,
-          @Json(name = "requireAllWords") boolean requireAllWords,
-          @Json(name = "foodTypes") List<String> foodTypes
-  ) {
+  public void calculateRatios(double caloricRequirements, String gender) {
+    // strings to be able to be converted to double, otherwise number format exception
+    // check csv file
+    double caloricRatio = caloricRequirements / this.nutritionalRequirements.get(gender).get("Calorie Level Assessed");
+    for (String key : this.nutritionalRequirements.get(gender).keySet()) {
+      this.nutritionNeeds.put(key, this.nutritionalRequirements.get(gender).get(key) / caloricRatio);
+    }
   }
 
-  public record FoodNutrient(
-          @Json(name = "nutrientId") int nutrientId,
-          @Json(name = "nutrientName") String nutrientName,
-          @Json(name = "nutrientNumber") String nutrientNumber,
-          @Json(name = "unitName") String unitName,
-          @Json(name = "derivationCode") String derivationCode,
-          @Json(name = "derivationDescription") String derivationDescription,
-          @Json(name = "derivationId") int derivationId,
-          @Json(name = "value") double value,
-          @Json(name = "foodNutrientSourceId") int foodNutrientSourceId,
-          @Json(name = "foodNutrientSourceCode") String foodNutrientSourceCode,
-          @Json(name = "foodNutrientSourceDescription") String foodNutrientSourceDescription,
-          @Json(name = "rank") int rank,
-          @Json(name = "indentLevel") int indentLevel,
-          @Json(name = "foodNutrientId") int foodNutrientId
-          //@Json(name = "dataPoints") int dataPoints
-  ) {
+  public Map<String, Map<String, Double>> getFoodData () {
+    return this.foodData;
   }
 
-  public record Food(
-          @Json(name = "fdcId") int fdcId,
-          @Json(name = "description") String description,
-          @Json(name = "commonNames") String commonNames,
-          @Json(name = "additionalDescriptions") String additionalDescriptions,
-          @Json(name = "dataType") String dataType,
-          @Json(name = "ndbNumber") int ndbNumber,
-          @Json(name = "publishedDate") String publishedDate,
-          @Json(name = "foodCategory") String foodCategory,
-          @Json(name = "allHighlightFields") String allHighlightFields,
-          @Json(name = "score") double score,
-          @Json(name = "microbes") List<String> microbes,
-          @Json(name = "foodNutrients") List<FoodNutrient> foodNutrients
-  ) {
-  }
-
-  public record FoodDataResponse(
-          @Json(name = "totalHits") int totalHits,
-          @Json(name = "currentPage") int currentPage,
-          @Json(name = "totalPages") int totalPages,
-          @Json(name = "pageList") List<Integer> pageList,
-          @Json(name = "foodSearchCriteria") FoodSearchCriteria foodSearchCriteria,
-          @Json(name = "foods") List<Food> foods
-  ) {
-  }
+//  public record FoodSearchCriteria(
+//          @Json(name = "dataType") List<String> dataType,
+//          @Json(name = "query") String query,
+//          @Json(name = "generalSearchInput") String generalSearchInput,
+//          @Json(name = "pageNumber") int pageNumber,
+//          @Json(name = "sortBy") String sortBy,
+//          @Json(name = "sortOrder") String sortOrder,
+//          @Json(name = "numberOfResultsPerPage") int numberOfResultsPerPage,
+//          @Json(name = "pageSize") int pageSize,
+//          @Json(name = "requireAllWords") boolean requireAllWords,
+//          @Json(name = "foodTypes") List<String> foodTypes
+//  ) {
+//  }
+//
+//  public record FoodNutrient(
+//          @Json(name = "nutrientId") int nutrientId,
+//          @Json(name = "nutrientName") String nutrientName,
+//          @Json(name = "nutrientNumber") String nutrientNumber,
+//          @Json(name = "unitName") String unitName,
+//          @Json(name = "derivationCode") String derivationCode,
+//          @Json(name = "derivationDescription") String derivationDescription,
+//          @Json(name = "derivationId") int derivationId,
+//          @Json(name = "value") double value,
+//          @Json(name = "foodNutrientSourceId") int foodNutrientSourceId,
+//          @Json(name = "foodNutrientSourceCode") String foodNutrientSourceCode,
+//          @Json(name = "foodNutrientSourceDescription") String foodNutrientSourceDescription,
+//          @Json(name = "rank") int rank,
+//          @Json(name = "indentLevel") int indentLevel,
+//          @Json(name = "foodNutrientId") int foodNutrientId
+//          //@Json(name = "dataPoints") int dataPoints
+//  ) {
+//  }
+//
+//  public record Food(
+//          @Json(name = "fdcId") int fdcId,
+//          @Json(name = "description") String description,
+//          @Json(name = "commonNames") String commonNames,
+//          @Json(name = "additionalDescriptions") String additionalDescriptions,
+//          @Json(name = "dataType") String dataType,
+//          @Json(name = "ndbNumber") int ndbNumber,
+//          @Json(name = "publishedDate") String publishedDate,
+//          @Json(name = "foodCategory") String foodCategory,
+//          @Json(name = "allHighlightFields") String allHighlightFields,
+//          @Json(name = "score") double score,
+//          @Json(name = "microbes") List<String> microbes,
+//          @Json(name = "foodNutrients") List<FoodNutrient> foodNutrients
+//  ) {
+//  }
+//
+//  public record FoodDataResponse(
+//          @Json(name = "totalHits") int totalHits,
+//          @Json(name = "currentPage") int currentPage,
+//          @Json(name = "totalPages") int totalPages,
+//          @Json(name = "pageList") List<Integer> pageList,
+//          @Json(name = "foodSearchCriteria") FoodSearchCriteria foodSearchCriteria,
+//          @Json(name = "foods") List<Food> foods
+//  ) {
+//  }
 
   public record FoodAbridged(
           @Json(name = "fdcId") int fdcId,
@@ -223,10 +269,13 @@ public class NutritionDataSource implements Query<String, String> {
   public record FoodNutrientAbridged(
           @Json(name = "number") String number,
           @Json(name = "name") String name,
-          @Json(name = "amount") double amount,
+          @Json(name = "amount") Double amount,
           @Json(name = "unitName") String unitName,
           @Json(name = "derivationCode") String derivationCode,
           @Json(name = "derivationDescription") String derivationDescription
   ) {
+    public FoodNutrientAbridged {
+      if(amount == null) amount = 0.0;
+    }
   }
 }

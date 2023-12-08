@@ -2,7 +2,6 @@ package edu.brown.cs.student.pureplatetests;
 
 import edu.brown.cs.student.pureplate.datasources.DatasourceException;
 import edu.brown.cs.student.pureplate.datasources.NutritionDataSource;
-import edu.brown.cs.student.pureplate.datasources.NutritionDataSource.FoodNutrient;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -13,67 +12,82 @@ import org.testng.Assert;
  */
 public class TestNutritionDataSource {
 
-  /**
-   * Tests the functionality of the getNutritionData method.
-   * @throws DatasourceException if nutrition data cannot be retrieved.
-   */
   @Test
-  public void testGetNutritionData() throws DatasourceException {
+  public void testGetFoodDatabase() throws DatasourceException {
     NutritionDataSource dataSource = new NutritionDataSource();
+    dataSource.getFoodDatabase();
+    Map<String, Map<String, Double>> foodData = dataSource.getFoodData();
+    Assert.assertEquals(foodData.size(), 265);
 
-    // Empty list of foods
-    Assert.assertThrows(DatasourceException.class, () -> dataSource.getNutritionData(List.of()));
+    // Test a bunch of food descriptions
 
-    // Basic case
-    Map<String, List<FoodNutrient>> nutritionData = dataSource.getNutritionData(List.of("eggs"));
-    Assert.assertTrue(nutritionData.containsKey("Eggs, Grade A, Large, egg white"));
-    List<FoodNutrient> nutrients = nutritionData.get("Eggs, Grade A, Large, egg white");
-    Assert.assertEquals(nutrients.size(), 29);
-    Assert.assertEquals(nutrients.get(0).nutrientId(), 1166);
+    // Test map stuff -- nutrient name and amount (key-value) in foodNutrientsAbridged per food
+    System.out.println(foodData);
+    System.out.println(foodData.size());
 
-    // Food with spaces
-    nutritionData = dataSource.getNutritionData(List.of("pork loin"));
-    Assert.assertTrue(nutritionData.containsKey("Pork, loin, boneless, raw"));
-    nutrients = nutritionData.get("Pork, loin, boneless, raw");
-    Assert.assertEquals(nutrients.size(), 22);
-    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-
-    // Multiple entries in list
-    nutritionData = dataSource.getNutritionData(List.of("scrambled eggs", "steak", "apple"));
-    Assert.assertTrue(nutritionData.containsKey("Eggs, Grade A, Large, egg white"));
-    nutrients = nutritionData.get("Eggs, Grade A, Large, egg white");
-    Assert.assertEquals(nutrients.size(), 29);
-    Assert.assertEquals(nutrients.get(0).nutrientId(), 1166);
-
-    Assert.assertTrue(nutritionData.containsKey("Beef, flank, steak, boneless, choice, raw"));
-    nutrients = nutritionData.get("Beef, flank, steak, boneless, choice, raw");
-    Assert.assertEquals(nutrients.size(), 22);
-    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-
-    Assert.assertTrue(nutritionData.containsKey("Apples, fuji, with skin, raw"));
-    nutrients = nutritionData.get("Apples, fuji, with skin, raw");
-    Assert.assertEquals(nutrients.size(), 31);
-    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-
-    // Duplicate items in list
-    nutritionData = dataSource.getNutritionData(List.of("pork loin", "pork loin"));
-    Assert.assertTrue(nutritionData.containsKey("Pork, loin, boneless, raw"));
-    Assert.assertEquals(nutritionData.keySet().size(), 1); // should not result in duplicate map entries
-    nutrients = nutritionData.get("Pork, loin, boneless, raw");
-    Assert.assertEquals(nutrients.size(), 22);
-    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-
-    // Food not in database
-    nutritionData = dataSource.getNutritionData(List.of("salmon"));
-    Assert.assertTrue(nutritionData.containsKey("salmon"));
-    nutrients = nutritionData.get("salmon");
-    Assert.assertTrue(nutrients.isEmpty());
-
-    nutritionData = dataSource.getNutritionData(List.of("asdfghjkl"));
-    Assert.assertTrue(nutritionData.containsKey("asdfghjkl"));
-    nutrients = nutritionData.get("asdfghjkl");
-    Assert.assertTrue(nutrients.isEmpty());
   }
+
+//  /**
+//   * Tests the functionality of the getNutritionData method.
+//   * @throws DatasourceException if nutrition data cannot be retrieved.
+//   */
+//  @Test
+//  public void testGetNutritionData() throws DatasourceException {
+//    NutritionDataSource dataSource = new NutritionDataSource();
+//
+//    // Empty list of foods
+//    Assert.assertThrows(DatasourceException.class, () -> dataSource.getNutritionData(List.of()));
+//
+//    // Basic case
+//    Map<String, List<FoodNutrient>> nutritionData = dataSource.getNutritionData(List.of("eggs"));
+//    Assert.assertTrue(nutritionData.containsKey("Eggs, Grade A, Large, egg white"));
+//    List<FoodNutrient> nutrients = nutritionData.get("Eggs, Grade A, Large, egg white");
+//    Assert.assertEquals(nutrients.size(), 29);
+//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1166);
+//
+//    // Food with spaces
+//    nutritionData = dataSource.getNutritionData(List.of("pork loin"));
+//    Assert.assertTrue(nutritionData.containsKey("Pork, loin, boneless, raw"));
+//    nutrients = nutritionData.get("Pork, loin, boneless, raw");
+//    Assert.assertEquals(nutrients.size(), 22);
+//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
+//
+//    // Multiple entries in list
+//    nutritionData = dataSource.getNutritionData(List.of("scrambled eggs", "steak", "apple"));
+//    Assert.assertTrue(nutritionData.containsKey("Eggs, Grade A, Large, egg white"));
+//    nutrients = nutritionData.get("Eggs, Grade A, Large, egg white");
+//    Assert.assertEquals(nutrients.size(), 29);
+//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1166);
+//
+//    Assert.assertTrue(nutritionData.containsKey("Beef, flank, steak, boneless, choice, raw"));
+//    nutrients = nutritionData.get("Beef, flank, steak, boneless, choice, raw");
+//    Assert.assertEquals(nutrients.size(), 22);
+//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
+//
+//    Assert.assertTrue(nutritionData.containsKey("Apples, fuji, with skin, raw"));
+//    nutrients = nutritionData.get("Apples, fuji, with skin, raw");
+//    Assert.assertEquals(nutrients.size(), 31);
+//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
+//
+//    // Duplicate items in list
+//    nutritionData = dataSource.getNutritionData(List.of("pork loin", "pork loin"));
+//    Assert.assertTrue(nutritionData.containsKey("Pork, loin, boneless, raw"));
+//    Assert.assertEquals(nutritionData.keySet().size(), 1); // should not result in duplicate map entries
+//    nutrients = nutritionData.get("Pork, loin, boneless, raw");
+//    Assert.assertEquals(nutrients.size(), 22);
+//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
+//
+//    // Food not in database
+//    nutritionData = dataSource.getNutritionData(List.of("salmon"));
+//    Assert.assertTrue(nutritionData.containsKey("salmon"));
+//    nutrients = nutritionData.get("salmon");
+//    Assert.assertTrue(nutrients.isEmpty());
+//
+//    nutritionData = dataSource.getNutritionData(List.of("asdfghjkl"));
+//    Assert.assertTrue(nutritionData.containsKey("asdfghjkl"));
+//    nutrients = nutritionData.get("asdfghjkl");
+//    Assert.assertTrue(nutrients.isEmpty());
+//  }
 
   /**
    * Tests the functionality of the calculateCaloricRequirement method.
