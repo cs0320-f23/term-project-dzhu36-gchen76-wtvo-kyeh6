@@ -3,6 +3,7 @@ package edu.brown.cs.student.pureplate;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.pureplate.datasources.Query;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,12 +17,13 @@ import spark.Route;
  */
 public class PurePlateHandler implements Route {
 
-  // private static Query<String, String> cache;
+   private static Query<String, String> cache;
 
   /**
    * Constructor for PurePlateHandler.
    */
-  public PurePlateHandler() {
+  public PurePlateHandler(Query<String, String> myCache) {
+    this.cache = myCache;
   }
 
   /**
@@ -37,9 +39,10 @@ public class PurePlateHandler implements Route {
     Set<String> params = request.queryParams();
     Map<String, Object> results = new HashMap<>();
     results.put("test key", "test value");
-    for(String param : params) {
-      results.put(param, request.queryParams(param));
-    }
+//    for(String param : params) {
+//      results.put(param, request.queryParams(param));
+//    }
+    results.put("recommendations", this.cache.query("HI"));
 
     return this.serialize(results);
   }

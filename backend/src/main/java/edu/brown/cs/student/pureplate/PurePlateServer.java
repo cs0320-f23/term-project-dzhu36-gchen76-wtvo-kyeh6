@@ -28,7 +28,7 @@ public class PurePlateServer {
           response.header("Access-Control-Allow-Origin", "*");
           response.header("Access-Control-Allow-Methods", "*");
         });
-    Spark.get("pureplate", new PurePlateHandler());
+    Spark.get("pureplate", new PurePlateHandler(cache));
     Spark.init();
     Spark.awaitInitialization();
 
