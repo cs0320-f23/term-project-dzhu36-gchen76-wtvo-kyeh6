@@ -5,6 +5,9 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.pureplate.key.apikey;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -22,6 +25,7 @@ public class NutritionDataSource implements Query<String, String> {
   private Map<String, Double> nutritionNeeds;
   private Map<String, Map<String, Double>> foodData;
   private List<String> visited;
+  private List<String> growable = parseGrowable();
   public NutritionDataSource() {
     try {
       this.foodData = new HashMap<>();
@@ -286,6 +290,22 @@ public class NutritionDataSource implements Query<String, String> {
         }
         this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - nutritionValue);
       }
+    }
+  }
+
+  public static List<String> parseGrowable() {
+    try {
+      List<String> list = new ArrayList<>();
+      BufferedReader bufferedReader = new BufferedReader(new FileReader("data/nutrition/growable.txt"));
+      String currentFileLine = bufferedReader.readLine();
+      while (currentFileLine != null) {
+        list.add(currentFileLine);
+        currentFileLine = bufferedReader.readLine();
+      }
+      bufferedReader.close();
+      return list;
+    } catch (IOException e) {
+      return new ArrayList<>();
     }
   }
 
