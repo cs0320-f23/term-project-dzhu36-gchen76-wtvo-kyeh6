@@ -16,7 +16,7 @@ import java.util.*;
 
 import okio.Buffer;
 
-public class NutritionDataSource implements Query<String, String> {
+public class NutritionDataSource implements Query<String, List<String>> {
 
   /**
    * Stores the data for nutritional guidelines mapping from gender to a hashmap of guidelines
@@ -32,21 +32,37 @@ public class NutritionDataSource implements Query<String, String> {
       this.nutritionNeeds = new HashMap<>();
       this.getFoodDatabase();
       CsvParser parser = new CsvParser();
-      parser.parse("data/nutrition/daily_requirements.csv");
+      parser.parse("backend/data/nutrition/daily_requirements.csv"); // used to be data/nutrition/etc...
       this.nutritionalRequirements = parser.getTable();
     } catch (DatasourceException e) {
       nutritionalRequirements = new HashMap<>();
     }
   }
 
-  public String query(String target) throws DatasourceException {
-    System.out.println("query before functions");
-//    List<String> foods = Arrays.asList(target.split("`"));
-//    Set<String> foodSet = new HashSet<>(foods);
+  /**
+   *
+   * @param target - the URI of the ACS API with state and county identifiers (or in the context of
+   *               the redlining data, a type that contains all the parameters to filter the
+   *               redlining data on)
+   * @return
+   * @throws DatasourceException
+   */
+  public String query(List<String> target) throws DatasourceException {
+    // note to self: check case where one of these empty
+    String weight = target.get(0);
+    String height = target.get(1);
+    String age = target.get(2);
+    String gender = target.get(3);
+    String activity = target.get(4);
+    String foodsString = target.get(5);
+
+    // System.out.println("query before functions");
     this.visited = new ArrayList<>();
-    this.visited.add("Frankfurter, beef, unheated");
-    this.visited.add("Almond butter, creamy");
-    this.visited.add("Almond milk, unsweetened, plain, refrigerated");
+    List<String> foodsList = Arrays.asList(foodsString.split("`"));
+    this.visited.addAll(foodsList);
+//    this.visited.add("Frankfurter, beef, unheated");
+//    this.visited.add("Almond butter, creamy");
+//    this.visited.add("Almond milk, unsweetened, plain, refrigerated");
 //      // get parameters
 ////      Moshi moshi = new Moshi.Builder().build();
 ////      Type listStrings = Types.newParameterizedType(List.class, List.class, String.class);
@@ -59,18 +75,29 @@ public class NutritionDataSource implements Query<String, String> {
 ////      List<String> targetRow = dataList.get(1);
 //      // Calculate Caloric Requirement
 //      // Update nutritionNeeds based on the article and guidelines
-    this.calculateRatios(2000, "Male");
-    System.out.println("after calculating ratios");
-//      // Calculate Deficiencies
-//    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
-//    for (String food : foodSet) {
-//      for (String key : this.foodData.get(food).keySet()) {
-//        this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - this.foodData.get(food).get(key));
-//      }
-//    }
-      this.calculateDeficiency(this.visited);
-      System.out.println("query after deficiency");
-      return this.getRecommendations().toString();
+
+    try {
+      this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(weight), Integer.parseInt(height), Integer.parseInt(age), gender, activity), gender);
+    } catch (NumberFormatException e) {
+      throw new DatasourceException("Unreasonable weight, height, or age parameter");
+    }
+    this.calculateDeficiency(this.visited);
+    return this.getRecommendations().toString();
+
+
+
+//    this.calculateRatios(2000, "Male");
+//    System.out.println("after calculating ratios");
+////      // Calculate Deficiencies
+////    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
+////    for (String food : foodSet) {
+////      for (String key : this.foodData.get(food).keySet()) {
+////        this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - this.foodData.get(food).get(key));
+////      }
+////    }
+//      this.calculateDeficiency(this.visited);
+//      System.out.println("query after deficiency");
+//      return this.getRecommendations().toString();
   }
 
   private Map<String, Double> getScore() {
@@ -229,7 +256,7 @@ public class NutritionDataSource implements Query<String, String> {
   public double calculateCaloricRequirement(
           double weight_kg, int height_cm, int age_years, String gender, String activity)
       throws DatasourceException {
-    if (weight_kg < 0 || height_cm < 0 || age_years < 0) {
+    if (weight_kg <= 0 || height_cm <= 0 || age_years <= 0) {
       throw new DatasourceException("Measurement is negative");
     }
     double caloricRequirement = 0;
@@ -238,12 +265,13 @@ public class NutritionDataSource implements Query<String, String> {
     } else if (gender.equalsIgnoreCase("female")) {
       caloricRequirement = 10 * weight_kg + 6.25 * height_cm - 5 * age_years - 161;
     }
-    return switch (activity) {
-      case "Sedentary" -> caloricRequirement * 1.2;
-      case "Lightly Active" -> caloricRequirement * 1.375;
-      case "Moderately Active" -> caloricRequirement * 1.55;
-      case "Very Active" -> caloricRequirement * 1.725;
-      case "Extra Active" -> caloricRequirement * 1.9;
+    // Made case-insensitive
+    return switch (activity.toLowerCase()) {
+      case "sedentary" -> caloricRequirement * 1.2;
+      case "lightly active" -> caloricRequirement * 1.375;
+      case "moderately active" -> caloricRequirement * 1.55;
+      case "very active" -> caloricRequirement * 1.725;
+      case "extra active" -> caloricRequirement * 1.9;
       default -> caloricRequirement*=1.0;
     };
   }
@@ -256,13 +284,15 @@ public class NutritionDataSource implements Query<String, String> {
   public void calculateRatios(double caloricRequirements, String gender) {
     // strings to be able to be converted to double, otherwise number format exception
     // check csv file
+    gender = gender.toLowerCase();
     System.out.println("parsing csv");
 //    System.out.println(this.nutritionalRequirements);
 //    if (this.nutritionalRequirements.get("Calorie Level Assessed") == null) {
 //      System.out.println("cannot find calorie value");
 //    }
+    System.out.println(this.nutritionalRequirements.keySet());
     double caloricRatio = caloricRequirements / this.nutritionalRequirements.get(gender).get("Calorie Level Assessed");
-//    System.out.println(caloricRatio);
+    System.out.println(caloricRatio);
     for (String key : this.nutritionalRequirements.get(gender).keySet()) {
       this.nutritionNeeds.put(key, this.nutritionalRequirements.get(gender).get(key) / caloricRatio);
     }

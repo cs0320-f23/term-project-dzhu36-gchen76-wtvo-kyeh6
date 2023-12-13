@@ -7,6 +7,7 @@ import edu.brown.cs.student.pureplate.datasources.DatasourceException;
 import edu.brown.cs.student.pureplate.datasources.NutritionDataSource;
 import edu.brown.cs.student.pureplate.datasources.Query;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import spark.Spark;
 
@@ -19,7 +20,7 @@ public class PurePlateServer {
   /**
    * Constructor for the PurePlateServer class.
    */
-  public PurePlateServer(Query<String, String> cache) {
+  public PurePlateServer(Query<String, List<String>> cache) {
     int port = 3233;
 
     Spark.port(port);
