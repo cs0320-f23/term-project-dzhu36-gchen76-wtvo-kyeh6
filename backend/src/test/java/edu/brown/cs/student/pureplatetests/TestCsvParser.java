@@ -10,8 +10,7 @@ import org.testng.Assert;
 public class TestCsvParser {
 
   @Test
-  public void testParse() throws IOException, DatasourceException {
-    // fix later -- diff header names
+  public void testParse() throws DatasourceException {
     CsvParser parser = new CsvParser();
 
     // File doesn't exist
@@ -21,31 +20,28 @@ public class TestCsvParser {
     parser.parse("data/nutrition/daily_requirements.csv");
     Map<String, Map<String, Double>> requirementsTable = parser.getTable();
     Assert.assertEquals(requirementsTable.keySet().size(), 2);
-    Assert.assertTrue(requirementsTable.containsKey("Male"));
-    Assert.assertTrue(requirementsTable.containsKey("Female"));
+    Assert.assertTrue(requirementsTable.containsKey("male"));
+    Assert.assertTrue(requirementsTable.containsKey("female"));
 
-    Map<String, Double> maleRequirements = requirementsTable.get("Male");
-    Map<String, Double> femaleRequirements = requirementsTable.get("Female");
+    Map<String, Double> maleRequirements = requirementsTable.get("male");
+    Map<String, Double> femaleRequirements = requirementsTable.get("female");
     Assert.assertEquals(maleRequirements.size(), 25);
     Assert.assertEquals(femaleRequirements.size(), 25);
 
     Assert.assertEquals(maleRequirements.get("Calorie Level Assessed"), 2000);
     Assert.assertEquals(femaleRequirements.get("Calorie Level Assessed"), 1600);
 
-    Assert.assertEquals(maleRequirements.get("Protein (g)"), 56);
-    Assert.assertEquals(femaleRequirements.get("Protein (g)"), 46);
+    Assert.assertEquals(maleRequirements.get("Protein"), 56);
+    Assert.assertEquals(femaleRequirements.get("Protein"), 46);
 
-    Assert.assertEquals(maleRequirements.get("Fiber (g)"), 28);
-    Assert.assertEquals(femaleRequirements.get("Fiber (g)"), 22);
+    Assert.assertEquals(maleRequirements.get("Fiber"), 28);
+    Assert.assertEquals(femaleRequirements.get("Fiber"), 22);
 
-    Assert.assertEquals(maleRequirements.get("Vitamin K (mcg)"), 120);
-    Assert.assertEquals(femaleRequirements.get("Vitamin K (mcg)"), 90);
+    Assert.assertEquals(maleRequirements.get("Vitamin K"), 120);
+    Assert.assertEquals(femaleRequirements.get("Vitamin K"), 90);
 
-    Assert.assertEquals(maleRequirements.get("Folate (mcg DFE)"), 400);
-    Assert.assertEquals(femaleRequirements.get("Folate (mcg DFE)"), 400);
-
-    System.out.println(requirementsTable.get("Male"));
-    System.out.println(requirementsTable.get("Female"));
+    Assert.assertEquals(maleRequirements.get("Folate"), 400);
+    Assert.assertEquals(femaleRequirements.get("Folate"), 400);
   }
 
 }
