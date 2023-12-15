@@ -72,15 +72,6 @@ const Header = () => {
     }
     
     function handleClickTeam() {
-      // Logic to handle the "Team" button click
-      // if (window.location.href == "http://localhost:8000/software") {
-      //   window.location.href = "http://localhost:8000";
-      //   window.scrollTo({
-      //     top: 600,
-      //     left: 0,
-      //     behavior: "smooth",
-      //   });
-      // } else if ((window.location.href = "http://localhost:8000")) {
       if (window.location.href.includes("/software")) {
         navigate("/");
         setTimeout(() => {
@@ -93,11 +84,6 @@ const Header = () => {
           behavior: "smooth",
         });
       }
-      // window.scrollTo({
-      //   top: 600,
-      //   left: 0,
-      //   behavior: "smooth",
-      // });
     }
 
     return (
@@ -114,7 +100,7 @@ const Header = () => {
           </button>
           <button
             className="ApplicationButton"
-            onClick={() => navigate("software")}
+            onClick={() => navigate("/software")}
           >
             Software
           </button>
