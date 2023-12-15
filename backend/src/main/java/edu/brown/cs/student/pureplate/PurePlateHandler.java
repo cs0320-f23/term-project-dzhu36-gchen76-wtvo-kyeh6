@@ -57,6 +57,7 @@ public class PurePlateHandler implements Route {
       results.put("recommendations", cache.query(List.of(weight, height, age, gender, activity, foods)));
       results.put("result", "success");
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       results.put("result", "error_bad_datasource");
       results.put("message", "recommendations could not be retrieved");
     }

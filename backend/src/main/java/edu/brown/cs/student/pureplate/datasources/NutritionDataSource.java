@@ -26,14 +26,14 @@ public class NutritionDataSource implements Query<String, List<String>> {
   private Map<String, Map<String, Double>> foodData;
   private List<String> visited;
   private List<String> growable = parseGrowable();
-  public NutritionDataSource() {
+  public NutritionDataSource(String filename) {
     try {
       this.foodData = new HashMap<>();
       this.nutritionNeeds = new HashMap<>();
       this.getFoodDatabase();
       CsvParser parser = new CsvParser();
-      parser.parse("backend/data/nutrition/daily_requirements.csv"); // used to be data/nutrition/etc...
-      this.nutritionalRequirements = parser.getTable();
+      parser.parse(filename); // used to be data/nutrition/etc...
+      nutritionalRequirements = parser.getTable();
     } catch (DatasourceException e) {
       nutritionalRequirements = new HashMap<>();
     }
@@ -117,12 +117,12 @@ public class NutritionDataSource implements Query<String, List<String>> {
           score -= 1 / (1 + Math.max(0.0,
               this.nutritionNeeds.get(key) - nutrient));
           counter++;
-          if (key.equals("Vitamin D")) {
-            System.out.println("Vitamin D Value: " + nutrient);
-          }
-          if (key.equals("Vitamin K")) {
-            System.out.println("Vitamin K Value: " + nutrient);
-          }
+//          if (key.equals("Vitamin D")) {
+//            System.out.println("Vitamin D Value: " + nutrient);
+//          }
+//          if (key.equals("Vitamin K")) {
+//            System.out.println("Vitamin K Value: " + nutrient);
+//          }
         }
       }
       scoreMap.put(foodKey,  counter > 0 ? (this.visited.contains(foodKey) ? 99.0 : score/counter) : 0.0 ); // if the food doesn't have the nutrient
@@ -134,20 +134,20 @@ public class NutritionDataSource implements Query<String, List<String>> {
     List<String> recommendationList = new ArrayList<>();
     Map<String, Double> scoreMap = this.getScore();
     // populate priority queue using getScore
-    System.out.println("Priority Queue");
+    //System.out.println("Priority Queue");
     PriorityQueue<String> priorityFoods = new PriorityQueue<>(
         Comparator.comparingDouble(scoreMap::get));
-    System.out.println("Recommendation before while loop");
+    //System.out.println("Recommendation before while loop");
     while (!this.nutritionNeeds.entrySet().stream()
         .filter(entry -> !entry.getKey().equals("Calorie Level Assessed"))
         .allMatch(entry -> entry.getValue() <= 0.0)){
-      System.out.println("Beginning of while loop");
+      //System.out.println("Beginning of while loop");
       // add all foods to priority queue and pull the first food out and add to returnlist
       priorityFoods.addAll(this.foodData.keySet());
       
       // reupdate nutritional needs based off that food
       String highestPriorityFood = priorityFoods.peek();
-      System.out.println("replacing nutrition needs: " + highestPriorityFood);
+      //System.out.println("replacing nutrition needs: " + highestPriorityFood);
 
 //      this.nutritionNeeds.replaceAll((n, v) -> this.nutritionNeeds.get(n)
 //          - this.foodData.get(highestPriorityFood).get(n));
@@ -158,7 +158,7 @@ public class NutritionDataSource implements Query<String, List<String>> {
       // reupdate nutritional needs based off that food
       this.calculateDeficiency(this.visited);
 
-      System.out.println("Update score map");
+      //System.out.println("Update score map");
       // update Scores
       scoreMap = this.getScore();
 
@@ -285,28 +285,30 @@ public class NutritionDataSource implements Query<String, List<String>> {
     // strings to be able to be converted to double, otherwise number format exception
     // check csv file
     gender = gender.toLowerCase();
-    System.out.println("parsing csv");
+    //System.out.println("parsing csv");
 //    System.out.println(this.nutritionalRequirements);
 //    if (this.nutritionalRequirements.get("Calorie Level Assessed") == null) {
 //      System.out.println("cannot find calorie value");
 //    }
-    System.out.println(this.nutritionalRequirements.keySet());
+    //System.out.println(this.nutritionalRequirements.keySet());
     double caloricRatio = caloricRequirements / this.nutritionalRequirements.get(gender).get("Calorie Level Assessed");
-    System.out.println(caloricRatio);
+    //System.out.println(caloricRatio);
     for (String key : this.nutritionalRequirements.get(gender).keySet()) {
       this.nutritionNeeds.put(key, this.nutritionalRequirements.get(gender).get(key) / caloricRatio);
     }
   }
 
   public void calculateDeficiency(List<String> foods){
+    //System.out.println("in calculatedeficiency");
+    //System.out.println(this.nutritionNeeds);
     Set<String> foodSet = new HashSet<>(foods);
 //    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
     for (String food : foodSet) {
-      System.out.println("In outer for loop " + food);
+      //System.out.println("In outer for loop " + food);
 //      for (String key : this.foodData.get(food).keySet()) {
       for (String key : this.nutritionNeeds.keySet()) {
-        System.out.println(this.nutritionNeeds);
-        System.out.println(this.foodData.get(food));
+        //System.out.println(this.nutritionNeeds);
+        //System.out.println(this.foodData.get(food));
 
         // correctly assigns the nutrition value for the food
         double nutritionValue = 0;
@@ -315,9 +317,9 @@ public class NutritionDataSource implements Query<String, List<String>> {
             nutritionValue += this.foodData.get(food).get(foodNutrients);
           }
         }
-        if (key.equals("Vitamin D")) {
-          System.out.println("Deficiency Vitamin D: " + nutritionValue);
-        }
+//        if (key.equals("Vitamin D")) {
+//          System.out.println("Deficiency Vitamin D: " + nutritionValue);
+//        }
         this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - nutritionValue);
       }
     }
