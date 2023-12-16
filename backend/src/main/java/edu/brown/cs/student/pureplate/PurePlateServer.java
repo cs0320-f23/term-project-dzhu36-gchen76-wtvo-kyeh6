@@ -43,6 +43,6 @@ public class PurePlateServer {
    * @param args - an array of program arguments.
    */
   public static void main(String[] args) {
-    new PurePlateServer(new Cache(new NutritionDataSource("backend/data/nutrition/daily_requirements.csv"), 100, 1000));
+    new PurePlateServer(new Cache(new NutritionDataSource("./data/nutrition/daily_requirements.csv"), 100, 1000));
   }
 }
