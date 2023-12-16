@@ -45,26 +45,27 @@ public class PurePlateHandler implements Route {
     String age = request.queryParams("age");
     String gender = request.queryParams("gender");
     String activity = request.queryParams("activity");
+    String growable = request.queryParams("growable");
     String foods = request.queryParams("foods");
 
-    if (weight == null || height == null || age == null || gender == null || activity == null || foods == null) {
+    if (weight == null || height == null || age == null || gender == null || activity == null || growable == null || foods == null) {
       results.put("result", "error_bad_request");
       results.put("message", "missing request parameter");
       return this.serialize(results);
-    } else if (weight.equals("") || height.equals("") || age.equals("") || gender.equals("") || activity.equals("") || foods.equals("")) {
+    } else if (weight.equals("") || height.equals("") || age.equals("") || gender.equals("") || activity.equals("") || growable.equals("") || foods.equals("")) {
       results.put("result", "error_bad_request");
       results.put("message", "empty request parameter");
       return this.serialize(results);
     }
 
-    if (params.size() > 6) {
+    if (params.size() > 7) {
       results.put("result", "error_bad_request");
       results.put("message", "unrecognized parameter");
       return this.serialize(results);
     }
 
     try {
-      results.put("recommendations", cache.query(List.of(weight, height, age, gender, activity, foods)));
+      results.put("recommendations", cache.query(List.of(weight, height, age, gender, activity, growable, foods)));
       results.put("result", "success");
     } catch (DatasourceException e) {
       results.put("result", "error_bad_request");
@@ -72,6 +73,7 @@ public class PurePlateHandler implements Route {
     } catch (Exception e) {
       results.put("result", "error_bad_datasource");
       results.put("message", "recommendations could not be retrieved");
+      e.printStackTrace();
     }
 
     return this.serialize(results);

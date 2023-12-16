@@ -20,7 +20,7 @@ public class PurePlateServer {
   /**
    * Constructor for the PurePlateServer class.
    */
-  public PurePlateServer(Query<String, List<String>> cache) {
+  public PurePlateServer(Query<String, List<String>> cache, NutritionDataSource dataSource) {
     int port = 3233;
 
     Spark.port(port);
@@ -30,6 +30,7 @@ public class PurePlateServer {
           response.header("Access-Control-Allow-Methods", "*");
         });
     Spark.get("pureplate", new PurePlateHandler(cache));
+    Spark.get("data", new FoodDataHandler(dataSource));
     Spark.init();
     Spark.awaitInitialization();
 
@@ -43,6 +44,7 @@ public class PurePlateServer {
    * @param args - an array of program arguments.
    */
   public static void main(String[] args) {
-    new PurePlateServer(new Cache(new NutritionDataSource("backend/data/nutrition/daily_requirements.csv"), 100, 1000));
+    NutritionDataSource dataSource = new NutritionDataSource("./data/nutrition/daily_requirements.csv");
+    new PurePlateServer(new Cache(dataSource, 100, 1000), dataSource);
   }
 }
