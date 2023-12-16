@@ -65,12 +65,11 @@ public class NutritionDataSource implements Query<String, List<String>> {
     this.visited.addAll(foodsList);
     if (growable.equalsIgnoreCase("yes")) {
       this.onlyGrowable = true;
-      System.out.println("yes");
-    } else if (!growable.equalsIgnoreCase("no")) {
-      System.out.println("not no");
+    } else if (growable.equalsIgnoreCase("no")) {
+      this.onlyGrowable = false;
+    } else {
       throw new DatasourceException("Unreasonable growable parameter");
     }
-    System.out.println("no");
 //      // Calculate Caloric Requirement
 //      // Update nutritionNeeds based on the article and guidelines
 
@@ -103,7 +102,6 @@ public class NutritionDataSource implements Query<String, List<String>> {
     for (String foodKey : this.foodData.keySet()) {
       double score = 0.0;
       int counter = 0;
-//      for (String key : this.foodData.get(foodKey).keySet()) {
       for (String key : this.nutritionNeeds.keySet()) {
         if (this.nutritionNeeds.get(key) > 0.0) {
           double nutrient = 0;
@@ -115,18 +113,15 @@ public class NutritionDataSource implements Query<String, List<String>> {
           score -= 1 / (1 + Math.max(0.0,
               this.nutritionNeeds.get(key) - nutrient));
           counter++;
-//          if (key.equals("Vitamin D")) {
-//            System.out.println("Vitamin D Value: " + nutrient);
-//          }
-//          if (key.equals("Vitamin K")) {
-//            System.out.println("Vitamin K Value: " + nutrient);
-//          }
         }
       }
       if (this.onlyGrowable) {
-        scoreMap.put(foodKey, counter > 0 ? ((this.visited.contains(foodKey) ? 50.0 * -(counter / score) : (!this.growable.contains(foodKey) ? 1000.00 * -(counter / score) : score / counter ))) : 100.0); // if the food doesn't have the nutrient
+        scoreMap.put(foodKey, counter > 0 ? ((this.visited.contains(foodKey) ? 1000.0 * -(score / counter) :
+                (!this.growable.contains(foodKey) ? 1000.00 * -(score / counter) : score / counter ))) : 1000.0); // if the food doesn't have the nutrient
+        System.out.println(scoreMap);
       } else {
-        scoreMap.put(foodKey, counter > 0 ? (this.visited.contains(foodKey) ? 50.0 * -(counter / score) : score / counter) : 100.0);
+        scoreMap.put(foodKey, counter > 0 ? (this.visited.contains(foodKey) ? 1000.0 * -(score / counter) : score / counter) : 1000.0);
+        System.out.println(scoreMap);
       }
     }
     return scoreMap;
@@ -159,7 +154,7 @@ public class NutritionDataSource implements Query<String, List<String>> {
 
       // reupdate nutritional needs based off that food
       this.calculateDeficiency(this.visited);
-      System.out.println(nutritionNeeds);
+//      System.out.println(nutritionNeeds);
 
       //System.out.println("Update score map");
       // update Scores
