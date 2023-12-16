@@ -14,14 +14,16 @@ button {
   border: 0ch;
   border-radius: 12px;
   display: flexbox;
-  color: rgb(255, 255, 255);
+  color: rgb(240, 245, 239);
   background-color: transparent;
   transform: translate(600px, 0px);
 }
+
 button:hover {
   color: rgb(62, 142, 75); /* Change text color on hover */
   cursor: pointer;
 }
+
 #headerbar {
   /* This is the header */
   font-weight: 500;
@@ -271,6 +273,7 @@ input [type="checkbox"] :checked {
   cursor: pointer;
 }
 
+/* Height */
 .Height {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
@@ -293,6 +296,7 @@ input [type="checkbox"] :checked {
   cursor: pointer;
 }
 
+/* Weight */
 .Weight {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
@@ -323,6 +327,27 @@ input [type="checkbox"] :checked {
   color: rgb(0, 0, 0);
   width: 400px;
   transform: translate(750px, 100px);
+}
+
+ #Submit_Button {
+  font-size: 20px;
+  background-color: red;
+  font-weight: 500;
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  margin-right: 5%;
+  margin-top: 0%;
+  border: 0ch;
+  border-radius: 12px;
+  display: flexbox;
+  color: rgb(255, 255, 255);
+  transform: translate(50px, 200px);
+}
+
+#Submit_Button:hover {
+  color: rgb(60, 173, 79); /* Change text color on hover */
+  background-color: blue;
+  cursor: pointer;
 }
 /* .dropdown-check-list {
   display: inline-block;
