@@ -40,6 +40,7 @@ interface REPLFunction {
   const [height, setHeight] = useState("");
   const [gender, setGender] = useState("");
   const [activityLevel, setActivityLevel] = useState("");
+  const [growable, setGrowable] = useState("");
 
   // const Age = document.getElementById('txtbx1')
   const Height = document.getElementById('txtbx2')
@@ -99,6 +100,15 @@ interface REPLFunction {
     }
   }
   
+  function handleGrowableChange(event: ChangeEvent<HTMLInputElement>) {
+    const value = event.target.value;
+    if (value === "Yes" || value === "No") {
+      setGrowable(value);
+    } else {
+      setGrowable("");
+      window.alert("Please select if growable");
+    }
+  }
 
 
   async function handleSubmit(): Promise<void> {
@@ -125,8 +135,8 @@ interface REPLFunction {
     console.log(age)
     console.log(gender)
     console.log(activityLevel)
-    if(weight !== "" && height !== "" && age !== "" && gender !== "" && activityLevel !== "") {
-      console.log(getPurePlateData(weight, age, height, gender, activityLevel, "Carrots,%20baby,%20raw`Tomato,%20roma"))
+    if(weight !== "" && height !== "" && age !== "" && gender !== "" && activityLevel !== "" && growable !== "") {
+      console.log(getPurePlateData(weight, age, height, gender, activityLevel, growable, "Carrots,%20baby,%20raw`Tomato,%20roma"))
     } else {
       console.log("One parameter is empty")
     }
@@ -142,22 +152,19 @@ interface REPLFunction {
       <h1 className="Weight">Weight (kg)</h1>
       <h1 className="Activity-Level">Activity Level</h1>
       <h1 className="Height">Height (cm)</h1>
-
+      <h1 className="Growable">Only Search Growable Foods? </h1>s
       <h1 className="Weight-container">
         <input id="txtbx3" onChange={handleWeightChange}></input>
         <label htmlFor="txtbx3"> </label>
       </h1>
-
       <h1 className="Height-container">
         <input id="txtbx2" onChange={handleHeightChange}></input>
         <label htmlFor="txtbx2"> </label>
       </h1>
-
       <h1 className="age-container">
         <input id="txtbx1" onChange={handleAgeChange}></input>
         <label htmlFor="txtbx1"> </label>
       </h1>
-
       <h1 className="gender-container">
         <input
           type="radio"
@@ -178,7 +185,6 @@ interface REPLFunction {
         ></input>
         <label htmlFor="cb5"> Female </label>
       </h1>
-
       {/* <select> */}
       <h1 className="activity-level-container">
         <input
@@ -229,6 +235,26 @@ interface REPLFunction {
           onChange={handleActivityLevelChange}
         ></input>
         <label htmlFor="rb5"> Extra Active </label>
+      </h1>
+      <h1 className="growable-container">
+        <input
+          type="radio"
+          id="rb1"
+          value="Yes"
+          checked={growable === "Yes"}
+          onChange={handleGrowableChange}
+        ></input>
+        <label htmlFor="rb1"> </label>
+      </h1>
+      <h1 className="growable-container">
+        <input
+          type="radio"
+          id="rb2"
+          value="No"
+          checked={growable === "No"}
+          onChange={handleGrowableChange}
+        ></input>
+        <label htmlFor="rb2"> </label>
       </h1>
       <button
         aria-label="Submit Button"

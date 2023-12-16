@@ -216,7 +216,7 @@ h4 {
 .activity-level-container input [type="checkbox"] {
   cursor: pointer;
 }
-input [type="checkbox"] :checked {
+input [type="radio"] :checked {
   font-size: larger;
 }
 .Activity-Level {
@@ -248,7 +248,7 @@ input [type="checkbox"] :checked {
 .gender-container input [type="checkbox"] {
   cursor: pointer;
 }
-input [type="checkbox"] :checked {
+input [type="radio"] :checked {
   font-size: larger;
 }
 
@@ -319,6 +319,32 @@ input [type="checkbox"] :checked {
   cursor: pointer;
 }
 
+/* Growable */
+.Growable {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: rgb(0, 0, 0);
+  width: 400px;
+  transform: translate(180px, 260px);
+}
+.growable-container {
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  display: inline-block;
+  transform: translate(-280px, 35px);
+}
+.growable-container label {
+  cursor: pointer;
+  font-size: medium;
+}
+.growable-container input [type="checkbox"] {
+  cursor: pointer;
+}
+input [type="radio"] :checked {
+  font-size: larger;
+}
+
+/*Search History */
 .searchHistory {
   font-weight: 500;
   font-size: 40px;

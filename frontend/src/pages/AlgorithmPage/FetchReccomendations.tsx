@@ -1,10 +1,10 @@
 const recommendationsURL = "http://localhost:3233/pureplate?"
 
-export async function getPurePlateData(weight: string, age: string, height: string, gender: string, activityLevel: string, foods: string): Promise<string> {
+export async function getPurePlateData(weight: string, age: string, height: string, gender: string, activityLevel: string, growable: string, foods: string): Promise<string> {
     try {
-        return "hi"
+        // return "hi"
         const pureplate_response = await fetch(
-          `${recommendationsURL}weight=${weight}&height=${height}&age=${age}&gender=${gender}&activity=${activityLevel}&foods=${foods}`
+          `${recommendationsURL}weight=${weight}&height=${height}&age=${age}&gender=${gender}&activity=${activityLevel}&growable=${growable}&foods=${foods}`
         );
         const pureplate_json = await pureplate_response.json();
         const recommendations = pureplate_json.recommendations;
