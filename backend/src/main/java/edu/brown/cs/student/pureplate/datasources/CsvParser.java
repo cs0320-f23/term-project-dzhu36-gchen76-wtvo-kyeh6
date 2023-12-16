@@ -23,13 +23,13 @@ public class CsvParser {
       List<String> headers = Arrays.asList(currentFileLine.split(","));
       currentFileLine = bufferedReader.readLine();
       int genderIndex = headers.indexOf("gender");
-      System.out.println(headers);
-      System.out.println(headers.size());
+      //System.out.println(headers);
+      //System.out.println(headers.size());
 
       while (currentFileLine != null) {
         List<String> rowValues = Arrays.asList(currentFileLine.split(","));
-        System.out.println(rowValues);
-        System.out.println(rowValues.size());
+        //System.out.println(rowValues);
+        //System.out.println(rowValues.size());
         String gender = rowValues.get(genderIndex);
         this.table.put(gender, new HashMap<>());
         for (int i = 1; i < headers.size(); i++) {

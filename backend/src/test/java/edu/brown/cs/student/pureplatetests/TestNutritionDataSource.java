@@ -14,7 +14,7 @@ public class TestNutritionDataSource {
 
   @Test
   public void testGetFoodDatabase() throws DatasourceException {
-    NutritionDataSource dataSource = new NutritionDataSource();
+    NutritionDataSource dataSource = new NutritionDataSource("data/nutrition/daily_requirements.csv");
     dataSource.getFoodDatabase();
     Map<String, Map<String, Double>> foodData = dataSource.getFoodData();
     Assert.assertEquals(foodData.size(), 265);
@@ -25,6 +25,10 @@ public class TestNutritionDataSource {
     Assert.assertTrue(foodData.containsKey("Pork, loin, boneless, raw"));
     Assert.assertFalse(foodData.containsKey("not in database"));
     Assert.assertFalse(foodData.containsKey("carrot")); // not a food description
+
+    System.out.println(foodData.get("Carrots, baby, raw"));
+    System.out.println(foodData.get("Tomato, roma"));
+    System.out.println(foodData.get("Pork, loin, boneless, raw"));
 
     // Map w/ nutrient name keys and amount values per food description key
     Map<String, Double> carrotNutrients = foodData.get("Carrots, baby, raw");
@@ -118,7 +122,7 @@ public class TestNutritionDataSource {
    */
   @Test
   public void testCalculateCaloricRequirement() throws DatasourceException {
-    NutritionDataSource dataSource = new NutritionDataSource();
+    NutritionDataSource dataSource = new NutritionDataSource("data/nutrition/daily_requirements.csv");
 
     // Negative weight, height, and age
     Assert.assertThrows(DatasourceException.class, () -> dataSource.calculateCaloricRequirement(-80, 175, 25, "male", "unknown"));
