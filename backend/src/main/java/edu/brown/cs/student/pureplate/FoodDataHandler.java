@@ -31,7 +31,7 @@ public class FoodDataHandler implements Route {
             results.put("message", "unrecognized parameter");
             return this.serialize(results);
         }
-        results.put("food list", this.dataSource.keySet());
+        results.put("foods", this.dataSource.keySet());
         return this.serialize(results);
     }
 
