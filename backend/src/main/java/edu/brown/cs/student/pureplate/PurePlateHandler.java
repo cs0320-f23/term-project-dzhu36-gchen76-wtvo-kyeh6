@@ -51,13 +51,25 @@ public class PurePlateHandler implements Route {
       results.put("result", "error_bad_request");
       results.put("message", "missing request parameter");
       return this.serialize(results);
+    } else if (weight.equals("") || height.equals("") || age.equals("") || gender.equals("") || activity.equals("") || foods.equals("")) {
+      results.put("result", "error_bad_request");
+      results.put("message", "empty request parameter");
+      return this.serialize(results);
+    }
+
+    if (params.size() > 6) {
+      results.put("result", "error_bad_request");
+      results.put("message", "unrecognized parameter");
+      return this.serialize(results);
     }
 
     try {
       results.put("recommendations", cache.query(List.of(weight, height, age, gender, activity, foods)));
       results.put("result", "success");
+    } catch (DatasourceException e) {
+      results.put("result", "error_bad_request");
+      results.put("message", "unrecognized parameter input");
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       results.put("result", "error_bad_datasource");
       results.put("message", "recommendations could not be retrieved");
     }

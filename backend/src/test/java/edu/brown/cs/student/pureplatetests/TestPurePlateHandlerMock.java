@@ -74,76 +74,265 @@ public class TestPurePlateHandlerMock {
     return clientConnection;
   }
 
-  // test one food, two foods, three foods
-  // test bad request (wrong number of queries)
-  // test bad datasource (empty queries, unrecognized foods)
 //  this.foodData.put("Carrots, baby, raw", new HashMap<>());
 //
 //    this.foodData.put("Tomato, roma", new HashMap<>());
 //
 //    this.foodData.put("Pork, loin, boneless, raw", new HashMap<>());
-  // pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma
   @Test
   public void testPurePlateBasic() throws IOException {
+    // Multiple foods
     HttpURLConnection loadConnection =
         tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseMap =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-    System.out.println(responseMap);
     assertEquals(2, responseMap.size());
     assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
     assertEquals("success", responseMap.get("result"));
     assertNotEquals("[]", responseMap.get("recommendations"));
 
-//    assertEquals("0.0", responseMap.get("broadband"));
-//    assertEquals("orange county", responseMap.get("county"));
-//    assertEquals("california", responseMap.get("state"));
+    // One food
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
+    assertEquals("success", responseMap.get("result"));
+    assertNotEquals("[]", responseMap.get("recommendations"));
+    Object oneCarrotRecs = responseMap.get("recommendations");
 
-    // Orange County, Virginia
-//    loadConnection = tryRequest("broadband?state=Virginia&county=Orange%20County");
-//    assertEquals(200, loadConnection.getResponseCode());
-//    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-//    assertEquals(5, responseMap.size());
-//    assertEquals(
-//        Set.of("result", "date & time", "broadband", "county", "state"), responseMap.keySet());
-//    assertEquals("success", responseMap.get("result"));
-//    assertEquals("0.0", responseMap.get("broadband"));
-//    assertEquals("Orange County", responseMap.get("county"));
-//    assertEquals("Virginia", responseMap.get("state"));
+    // Multiple of the same food (should treat as one food)
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Carrots,%20baby,%20raw");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
+    assertEquals("success", responseMap.get("result"));
+    assertNotEquals("[]", responseMap.get("recommendations"));
+    assertEquals(oneCarrotRecs, responseMap.get("recommendations"));
 
     loadConnection.disconnect();
   }
 
   @Test
   public void testPurePlateBadRequest() throws IOException {
-//    HttpURLConnection loadConnection =
-//        tryRequest("broadband?state=california&county=orange%20county&random=r");
-//    assertEquals(200, loadConnection.getResponseCode());
-//    Map<String, Object> responseMap =
-//        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-//    assertEquals(5, responseMap.size());
-//    assertEquals("error_bad_json", responseMap.get("result"));
-//    assertEquals("unrecognized parameter inputs provided", responseMap.get("message"));
-//    assertEquals("orange county", responseMap.get("county"));
-//    assertEquals("california", responseMap.get("state"));
-//    assertEquals("r", responseMap.get("random"));
-//    loadConnection.disconnect();
+    // Missing parameters (weight, height, age, gender, activity, foods)
+    HttpURLConnection loadConnection =
+        tryRequest("pureplate?height=10&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseMap =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("missing request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("missing request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("missing request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("missing request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=female&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("missing request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=sedentary");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("missing request parameter", responseMap.get("message"));
+
+    // Unrecognized parameter
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma&random=random");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter", responseMap.get("message"));
+
+    // Unrecognized parameter values (e.g., negative age)
+    loadConnection =
+        tryRequest("pureplate?weight=0&height=0&age=0&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=-10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=-10&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=-10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=unrecognized&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    // Empty request parameters
+    loadConnection =
+        tryRequest("pureplate?weight=&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("empty request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("empty request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("empty request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("empty request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("empty request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("empty request parameter", responseMap.get("message"));
+
+    // Non-numerical value for weight, height, and age
+    loadConnection =
+        tryRequest("pureplate?weight=a&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=a&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=a&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
+
+    loadConnection.disconnect();
   }
 
   @Test
   public void testPurePlateBadDatasource() throws IOException {
-    // No URI parameters
-//    HttpURLConnection loadConnection = tryRequest("broadband");
-//    assertEquals(200, loadConnection.getResponseCode());
-//    Map<String, Object> responseMap =
-//        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-//    assertEquals(4, responseMap.size());
-//    assertEquals("error_bad_request", responseMap.get("result"));
-//    assertEquals("missing state and county parameters", responseMap.get("message"));
-//    assertEquals("none", responseMap.get("county"));
-//    assertEquals("none", responseMap.get("state"));
-//
-//    loadConnection.disconnect();
+    // Unrecognized foods
+    HttpURLConnection loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`unrecognized");
+    assertEquals(200, loadConnection.getResponseCode());
+    Map<String, Object> responseMap =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals("error_bad_datasource", responseMap.get("result"));
+    assertEquals("recommendations could not be retrieved", responseMap.get("message"));
+
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&foods=unrecognized");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals("error_bad_datasource", responseMap.get("result"));
+    assertEquals("recommendations could not be retrieved", responseMap.get("message"));
+
+    loadConnection.disconnect();
   }
 }

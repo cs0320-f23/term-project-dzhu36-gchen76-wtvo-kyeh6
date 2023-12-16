@@ -196,15 +196,17 @@ public class MockNutritionDataSource implements Query<String, List<String>> {
       double weight_kg, int height_cm, int age_years, String gender, String activity)
       throws DatasourceException {
     if (weight_kg <= 0 || height_cm <= 0 || age_years <= 0) {
-      throw new DatasourceException("Measurement is negative");
+      throw new DatasourceException("Unrecognized parameter input");
     }
     double caloricRequirement = 0;
     if (gender.equalsIgnoreCase("male")) {
       caloricRequirement = 10 * weight_kg + 6.25 * height_cm - 5 * age_years + 5;
     } else if (gender.equalsIgnoreCase("female")) {
       caloricRequirement = 10 * weight_kg + 6.25 * height_cm - 5 * age_years - 161;
+    } else {
+      throw new DatasourceException("Unrecognized parameter input");
     }
-    // Made case-insensitive
+
     return switch (activity.toLowerCase()) {
       case "sedentary" -> caloricRequirement * 1.2;
       case "lightly active" -> caloricRequirement * 1.375;

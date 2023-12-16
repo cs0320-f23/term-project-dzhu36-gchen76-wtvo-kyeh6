@@ -75,17 +75,6 @@ public class TestPurePlateHandler {
     clientConnection.connect();
     return clientConnection;
   }
-
-
-  // test one food, two foods, three foods
-  // test bad request (wrong number of queries)
-  // test bad datasource (empty queries, unrecognized foods)
-//  this.foodData.put("Carrots, baby, raw", new HashMap<>());
-//
-//    this.foodData.put("Tomato, roma", new HashMap<>());
-//
-//    this.foodData.put("Pork, loin, boneless, raw", new HashMap<>());
-  // pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma
   @Test
   public void testPurePlateBasic() throws IOException {
     // Multiple foods
@@ -111,37 +100,5 @@ public class TestPurePlateHandler {
     assertNotEquals("[]", responseMap.get("recommendations"));
 
     loadConnection.disconnect();
-  }
-
-  @Test
-  public void testPurePlateBadRequest() throws IOException {
-//    HttpURLConnection loadConnection =
-//        tryRequest("broadband?state=california&county=orange%20county&random=r");
-//    assertEquals(200, loadConnection.getResponseCode());
-//    Map<String, Object> responseMap =
-//        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-//    assertEquals(5, responseMap.size());
-//    assertEquals("error_bad_json", responseMap.get("result"));
-//    assertEquals("unrecognized parameter inputs provided", responseMap.get("message"));
-//    assertEquals("orange county", responseMap.get("county"));
-//    assertEquals("california", responseMap.get("state"));
-//    assertEquals("r", responseMap.get("random"));
-//    loadConnection.disconnect();
-  }
-
-  @Test
-  public void testPurePlateBadDatasource() throws IOException {
-    // No URI parameters
-//    HttpURLConnection loadConnection = tryRequest("broadband");
-//    assertEquals(200, loadConnection.getResponseCode());
-//    Map<String, Object> responseMap =
-//        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-//    assertEquals(4, responseMap.size());
-//    assertEquals("error_bad_request", responseMap.get("result"));
-//    assertEquals("missing state and county parameters", responseMap.get("message"));
-//    assertEquals("none", responseMap.get("county"));
-//    assertEquals("none", responseMap.get("state"));
-//
-//    loadConnection.disconnect();
   }
 }
