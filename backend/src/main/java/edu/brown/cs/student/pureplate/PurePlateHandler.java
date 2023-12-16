@@ -3,7 +3,10 @@ package edu.brown.cs.student.pureplate;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.pureplate.datasources.DatasourceException;
+import edu.brown.cs.student.pureplate.datasources.Query;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import spark.Request;
@@ -16,12 +19,13 @@ import spark.Route;
  */
 public class PurePlateHandler implements Route {
 
-  // private static Query<String, String> cache;
+   private static Query<String, List<String>> cache;
 
   /**
    * Constructor for PurePlateHandler.
    */
-  public PurePlateHandler() {
+  public PurePlateHandler(Query<String, List<String>> myCache) {
+    cache = myCache;
   }
 
   /**
@@ -34,11 +38,27 @@ public class PurePlateHandler implements Route {
    */
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    Set<String> params = request.queryParams();
+    Set<String> params = request.queryParams(); // might not use
     Map<String, Object> results = new HashMap<>();
-    results.put("test key", "test value");
-    for(String param : params) {
-      results.put(param, request.queryParams(param));
+    String weight = request.queryParams("weight");
+    String height = request.queryParams("height");
+    String age = request.queryParams("age");
+    String gender = request.queryParams("gender");
+    String activity = request.queryParams("activity");
+    String foods = request.queryParams("foods");
+
+    if (weight == null || height == null || age == null || gender == null || activity == null || foods == null) {
+      results.put("result", "error_bad_request");
+      results.put("message", "missing request parameter");
+      return this.serialize(results);
+    }
+
+    try {
+      results.put("recommendations", cache.query(List.of(weight, height, age, gender, activity, foods)));
+      results.put("result", "success");
+    } catch (Exception e) {
+      results.put("result", "error_bad_datasource");
+      results.put("message", "recommendations could not be retrieved");
     }
 
     return this.serialize(results);

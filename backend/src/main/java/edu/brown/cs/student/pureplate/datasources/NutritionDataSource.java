@@ -5,6 +5,9 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.pureplate.key.apikey;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,7 +16,7 @@ import java.util.*;
 
 import okio.Buffer;
 
-public class NutritionDataSource implements Query<String, String> {
+public class NutritionDataSource implements Query<String, List<String>> {
 
   /**
    * Stores the data for nutritional guidelines mapping from gender to a hashmap of guidelines
@@ -22,23 +25,44 @@ public class NutritionDataSource implements Query<String, String> {
   private Map<String, Double> nutritionNeeds;
   private Map<String, Map<String, Double>> foodData;
   private List<String> visited;
+  private List<String> growable = parseGrowable();
   public NutritionDataSource() {
     try {
       this.foodData = new HashMap<>();
       this.nutritionNeeds = new HashMap<>();
       this.getFoodDatabase();
       CsvParser parser = new CsvParser();
-      parser.parse("data/nutrition/daily_requirements.csv");
-      nutritionalRequirements = parser.getTable();
+      parser.parse("backend/data/nutrition/daily_requirements.csv"); // used to be data/nutrition/etc...
+      this.nutritionalRequirements = parser.getTable();
     } catch (DatasourceException e) {
       nutritionalRequirements = new HashMap<>();
     }
   }
 
+  /**
+   *
+   * @param target - the URI of the ACS API with state and county identifiers (or in the context of
+   *               the redlining data, a type that contains all the parameters to filter the
+   *               redlining data on)
+   * @return
+   * @throws DatasourceException
+   */
+  public String query(List<String> target) throws DatasourceException {
+    // note to self: check case where one of these empty
+    String weight = target.get(0);
+    String height = target.get(1);
+    String age = target.get(2);
+    String gender = target.get(3);
+    String activity = target.get(4);
+    String foodsString = target.get(5);
 
-  public String query(String target) throws DatasourceException {
-//    List<String> foods = Arrays.asList(target.split("`"));
-//    Set<String> foodSet = new HashSet<>(foods);
+    // System.out.println("query before functions");
+    this.visited = new ArrayList<>();
+    List<String> foodsList = Arrays.asList(foodsString.split("`"));
+    this.visited.addAll(foodsList);
+//    this.visited.add("Frankfurter, beef, unheated");
+//    this.visited.add("Almond butter, creamy");
+//    this.visited.add("Almond milk, unsweetened, plain, refrigerated");
 //      // get parameters
 ////      Moshi moshi = new Moshi.Builder().build();
 ////      Type listStrings = Types.newParameterizedType(List.class, List.class, String.class);
@@ -51,15 +75,29 @@ public class NutritionDataSource implements Query<String, String> {
 ////      List<String> targetRow = dataList.get(1);
 //      // Calculate Caloric Requirement
 //      // Update nutritionNeeds based on the article and guidelines
-//      // Calculate Deficiencies
-//    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
-//    for (String food : foodSet) {
-//      for (String key : this.foodData.get(food).keySet()) {
-//        this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - this.foodData.get(food).get(key));
-//      }
-//    }
-      this.calculateDeficiency(target);
-      return this.getRecommendations().toString();
+
+    try {
+      this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(weight), Integer.parseInt(height), Integer.parseInt(age), gender, activity), gender);
+    } catch (NumberFormatException e) {
+      throw new DatasourceException("Unreasonable weight, height, or age parameter");
+    }
+    this.calculateDeficiency(this.visited);
+    return this.getRecommendations().toString();
+
+
+
+//    this.calculateRatios(2000, "Male");
+//    System.out.println("after calculating ratios");
+////      // Calculate Deficiencies
+////    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
+////    for (String food : foodSet) {
+////      for (String key : this.foodData.get(food).keySet()) {
+////        this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - this.foodData.get(food).get(key));
+////      }
+////    }
+//      this.calculateDeficiency(this.visited);
+//      System.out.println("query after deficiency");
+//      return this.getRecommendations().toString();
   }
 
   private Map<String, Double> getScore() {
@@ -67,14 +105,27 @@ public class NutritionDataSource implements Query<String, String> {
     for (String foodKey : this.foodData.keySet()) {
       double score = 0.0;
       int counter = 0;
-      for (String key : this.foodData.get(foodKey).keySet()) {
-        if (nutritionNeeds.get(key) > 0.0) {
-          score += 1 / (1 + Math.max(0.0,
-              this.nutritionNeeds.get(key) - this.foodData.get(foodKey).get(key)));
+//      for (String key : this.foodData.get(foodKey).keySet()) {
+      for (String key : this.nutritionNeeds.keySet()) {
+        if (this.nutritionNeeds.get(key) > 0.0) {
+          double nutrient = 0;
+          for (String foodNutrients : this.foodData.get(foodKey).keySet()) {
+            if (foodNutrients.toLowerCase().contains(key.toLowerCase())) {
+              nutrient += this.foodData.get(foodKey).get(foodNutrients);
+            }
+          }
+          score -= 1 / (1 + Math.max(0.0,
+              this.nutritionNeeds.get(key) - nutrient));
           counter++;
+          if (key.equals("Vitamin D")) {
+            System.out.println("Vitamin D Value: " + nutrient);
+          }
+          if (key.equals("Vitamin K")) {
+            System.out.println("Vitamin K Value: " + nutrient);
+          }
         }
       }
-      scoreMap.put(foodKey,  counter > 0 ? (visited.contains(foodKey) ? -99.0 : score/counter) : 0.0 ); // if the food doesn't have the nutrient
+      scoreMap.put(foodKey,  counter > 0 ? (this.visited.contains(foodKey) ? 99.0 : score/counter) : 0.0 ); // if the food doesn't have the nutrient
     }
     return scoreMap;
   }
@@ -83,18 +134,34 @@ public class NutritionDataSource implements Query<String, String> {
     List<String> recommendationList = new ArrayList<>();
     Map<String, Double> scoreMap = this.getScore();
     // populate priority queue using getScore
+    System.out.println("Priority Queue");
     PriorityQueue<String> priorityFoods = new PriorityQueue<>(
         Comparator.comparingDouble(scoreMap::get));
-    while (!this.nutritionNeeds.values().stream().allMatch(value -> value <= 0)){
+    System.out.println("Recommendation before while loop");
+    while (!this.nutritionNeeds.entrySet().stream()
+        .filter(entry -> !entry.getKey().equals("Calorie Level Assessed"))
+        .allMatch(entry -> entry.getValue() <= 0.0)){
+      System.out.println("Beginning of while loop");
       // add all foods to priority queue and pull the first food out and add to returnlist
       priorityFoods.addAll(this.foodData.keySet());
       
       // reupdate nutritional needs based off that food
       String highestPriorityFood = priorityFoods.peek();
-      this.nutritionNeeds.replaceAll((n, v) -> this.nutritionNeeds.get(n)
-          - this.foodData.get(highestPriorityFood).get(n));
+      System.out.println("replacing nutrition needs: " + highestPriorityFood);
+
+//      this.nutritionNeeds.replaceAll((n, v) -> this.nutritionNeeds.get(n)
+//          - this.foodData.get(highestPriorityFood).get(n));
+
+      // mark the food as already recommended
+      this.visited.add(highestPriorityFood);
+
+      // reupdate nutritional needs based off that food
+      this.calculateDeficiency(this.visited);
+
+      System.out.println("Update score map");
       // update Scores
       scoreMap = this.getScore();
+
       // re-add everything to priority
       priorityFoods = new PriorityQueue<>(
           Comparator.comparingDouble(scoreMap::get));
@@ -127,42 +194,7 @@ public class NutritionDataSource implements Query<String, String> {
     return clientConnection;
   }
 
-//  public Map<String, List<FoodNutrient>> getNutritionData(List<String> listFoods) throws DatasourceException {
-//    try (Buffer buffer = new Buffer()) {
-//      Moshi moshi = new Moshi.Builder().build();
-//      JsonAdapter<FoodDataResponse> adapter = moshi.adapter(FoodDataResponse.class);
-//      Map<String, List<FoodNutrient>> returnMap = new HashMap<>();
-//      HttpURLConnection clientConnection;
-//      if (listFoods.isEmpty()) {
-//        throw new DatasourceException("Food list empty");
-//      }
-//      for (String food : listFoods) {
-//        URL foodURL =
-//                new URL(
-//                        "https",
-//                        "api.nal.usda.gov",
-//                        "/fdc/v1/foods/search?dataType=Foundation" +
-//                                "&sortBy=dataType.keyword" +
-//                                "&pageSize=1" +
-//                                "&sortOrder=asc" +
-//                                "&api_key=" + apikey.getKey() +
-//                                "&query=" + food.replace(" ", "%20"));
-//        clientConnection = connect(foodURL);
-//        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
-//        if (response == null) {
-//          continue;
-//        } else if (response.foods == null || response.foods.isEmpty()) { //response.foods.get(0) == null
-//          returnMap.put(food, new ArrayList<>());
-//        } else {
-//          returnMap.put(response.foods.get(0).description, response.foods.get(0).foodNutrients);
-//        }
-//        clientConnection.disconnect();
-//      }
-//      return returnMap;
-//    } catch (Exception e) {
-//      throw new DatasourceException(e.getMessage());
-//    }
-//  }
+
 
   // made public for unit testing
   public void getFoodDatabase() throws DatasourceException{
@@ -200,8 +232,8 @@ public class NutritionDataSource implements Query<String, String> {
           Map<String, Double> nutrientAmount = new HashMap<>();
           for (FoodNutrient nutrient : food.foodNutrients) {
             nutrientAmount.put(nutrient.name, nutrient.amount);
-            foodData.put(food.description, nutrientAmount);
           }
+          this.foodData.put(food.description, nutrientAmount);
         }
         clientConnection.disconnect();
     }
@@ -224,7 +256,7 @@ public class NutritionDataSource implements Query<String, String> {
   public double calculateCaloricRequirement(
           double weight_kg, int height_cm, int age_years, String gender, String activity)
       throws DatasourceException {
-    if (weight_kg < 0 || height_cm < 0 || age_years < 0) {
+    if (weight_kg <= 0 || height_cm <= 0 || age_years <= 0) {
       throw new DatasourceException("Measurement is negative");
     }
     double caloricRequirement = 0;
@@ -233,12 +265,13 @@ public class NutritionDataSource implements Query<String, String> {
     } else if (gender.equalsIgnoreCase("female")) {
       caloricRequirement = 10 * weight_kg + 6.25 * height_cm - 5 * age_years - 161;
     }
-    return switch (activity) {
-      case "Sedentary" -> caloricRequirement * 1.2;
-      case "Lightly Active" -> caloricRequirement * 1.375;
-      case "Moderately Active" -> caloricRequirement * 1.55;
-      case "Very Active" -> caloricRequirement * 1.725;
-      case "Extra Active" -> caloricRequirement * 1.9;
+    // Made case-insensitive
+    return switch (activity.toLowerCase()) {
+      case "sedentary" -> caloricRequirement * 1.2;
+      case "lightly active" -> caloricRequirement * 1.375;
+      case "moderately active" -> caloricRequirement * 1.55;
+      case "very active" -> caloricRequirement * 1.725;
+      case "extra active" -> caloricRequirement * 1.9;
       default -> caloricRequirement*=1.0;
     };
   }
@@ -251,20 +284,58 @@ public class NutritionDataSource implements Query<String, String> {
   public void calculateRatios(double caloricRequirements, String gender) {
     // strings to be able to be converted to double, otherwise number format exception
     // check csv file
+    gender = gender.toLowerCase();
+    System.out.println("parsing csv");
+//    System.out.println(this.nutritionalRequirements);
+//    if (this.nutritionalRequirements.get("Calorie Level Assessed") == null) {
+//      System.out.println("cannot find calorie value");
+//    }
+    System.out.println(this.nutritionalRequirements.keySet());
     double caloricRatio = caloricRequirements / this.nutritionalRequirements.get(gender).get("Calorie Level Assessed");
+    System.out.println(caloricRatio);
     for (String key : this.nutritionalRequirements.get(gender).keySet()) {
       this.nutritionNeeds.put(key, this.nutritionalRequirements.get(gender).get(key) / caloricRatio);
     }
   }
 
-  public void calculateDeficiency(String target) throws DatasourceException{
-    List<String> foods = Arrays.asList(target.split("`"));
+  public void calculateDeficiency(List<String> foods){
     Set<String> foodSet = new HashSet<>(foods);
-    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
+//    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
     for (String food : foodSet) {
-      for (String key : this.foodData.get(food).keySet()) {
-        this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - this.foodData.get(food).get(key));
+      System.out.println("In outer for loop " + food);
+//      for (String key : this.foodData.get(food).keySet()) {
+      for (String key : this.nutritionNeeds.keySet()) {
+        System.out.println(this.nutritionNeeds);
+        System.out.println(this.foodData.get(food));
+
+        // correctly assigns the nutrition value for the food
+        double nutritionValue = 0;
+        for (String foodNutrients : this.foodData.get(food).keySet()) {
+          if (foodNutrients.toLowerCase().contains(key.toLowerCase())) {
+            nutritionValue += this.foodData.get(food).get(foodNutrients);
+          }
+        }
+        if (key.equals("Vitamin D")) {
+          System.out.println("Deficiency Vitamin D: " + nutritionValue);
+        }
+        this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - nutritionValue);
       }
+    }
+  }
+
+  public static List<String> parseGrowable() {
+    try {
+      List<String> list = new ArrayList<>();
+      BufferedReader bufferedReader = new BufferedReader(new FileReader("data/nutrition/growable.txt"));
+      String currentFileLine = bufferedReader.readLine();
+      while (currentFileLine != null) {
+        list.add(currentFileLine);
+        currentFileLine = bufferedReader.readLine();
+      }
+      bufferedReader.close();
+      return list;
+    } catch (IOException e) {
+      return new ArrayList<>();
     }
   }
 
@@ -275,6 +346,67 @@ public class NutritionDataSource implements Query<String, String> {
   public Map<String, Double> getNutritionNeeds() {
     return new HashMap<>(this.nutritionNeeds);
   }
+
+  public record Food(
+          @Json(name = "fdcId") int fdcId,
+          @Json(name = "description") String description,
+          @Json(name = "dataType") String dataType,
+          @Json(name = "publicationDate") String publicationDate,
+          @Json(name = "ndbNumber") String ndbNumber,
+          @Json(name = "foodNutrients") List<FoodNutrient> foodNutrients
+  ) {
+  }
+
+  public record FoodNutrient(
+          @Json(name = "number") String number,
+          @Json(name = "name") String name,
+          @Json(name = "amount") Double amount,
+          @Json(name = "unitName") String unitName,
+          @Json(name = "derivationCode") String derivationCode,
+          @Json(name = "derivationDescription") String derivationDescription
+  ) {
+    public FoodNutrient {
+      if(amount == null) amount = 0.0;
+    }
+  }
+}
+
+//  public Map<String, List<FoodNutrient>> getNutritionData(List<String> listFoods) throws DatasourceException {
+//    try (Buffer buffer = new Buffer()) {
+//      Moshi moshi = new Moshi.Builder().build();
+//      JsonAdapter<FoodDataResponse> adapter = moshi.adapter(FoodDataResponse.class);
+//      Map<String, List<FoodNutrient>> returnMap = new HashMap<>();
+//      HttpURLConnection clientConnection;
+//      if (listFoods.isEmpty()) {
+//        throw new DatasourceException("Food list empty");
+//      }
+//      for (String food : listFoods) {
+//        URL foodURL =
+//                new URL(
+//                        "https",
+//                        "api.nal.usda.gov",
+//                        "/fdc/v1/foods/search?dataType=Foundation" +
+//                                "&sortBy=dataType.keyword" +
+//                                "&pageSize=1" +
+//                                "&sortOrder=asc" +
+//                                "&api_key=" + apikey.getKey() +
+//                                "&query=" + food.replace(" ", "%20"));
+//        clientConnection = connect(foodURL);
+//        FoodDataResponse response = adapter.fromJson(buffer.readFrom(clientConnection.getInputStream()));
+//        if (response == null) {
+//          continue;
+//        } else if (response.foods == null || response.foods.isEmpty()) { //response.foods.get(0) == null
+//          returnMap.put(food, new ArrayList<>());
+//        } else {
+//          returnMap.put(response.foods.get(0).description, response.foods.get(0).foodNutrients);
+//        }
+//        clientConnection.disconnect();
+//      }
+//      return returnMap;
+//    } catch (Exception e) {
+//      throw new DatasourceException(e.getMessage());
+//    }
+//  }
 
 //  public record FoodSearchCriteria(
 //          @Json(name = "dataType") List<String> dataType,
@@ -334,27 +466,3 @@ public class NutritionDataSource implements Query<String, String> {
 //          @Json(name = "foods") List<Food> foods
 //  ) {
 //  }
-
-  public record Food(
-          @Json(name = "fdcId") int fdcId,
-          @Json(name = "description") String description,
-          @Json(name = "dataType") String dataType,
-          @Json(name = "publicationDate") String publicationDate,
-          @Json(name = "ndbNumber") String ndbNumber,
-          @Json(name = "foodNutrients") List<FoodNutrient> foodNutrients
-  ) {
-  }
-
-  public record FoodNutrient(
-          @Json(name = "number") String number,
-          @Json(name = "name") String name,
-          @Json(name = "amount") Double amount,
-          @Json(name = "unitName") String unitName,
-          @Json(name = "derivationCode") String derivationCode,
-          @Json(name = "derivationDescription") String derivationDescription
-  ) {
-    public FoodNutrient {
-      if(amount == null) amount = 0.0;
-    }
-  }
-}
