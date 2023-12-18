@@ -203,11 +203,21 @@ h4 {
   height: auto;
 }
 
+
+/**Algorithms Page*/
+.form-container{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the start of the container */
+  padding: 20px; /* Adjust as needed */
+  width: 50%;
+}
+
 .activity-level-container {
   display: inline-block;
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  transform: translate(-445px, 225px);
+  /* transform: translate(-445px, 225px); */
 }
 .activity-level-container label {
   cursor: pointer;
@@ -224,7 +234,7 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(140px, 330px);
+  /* transform: translate(140px, 330px); */
 }
 
 /* GENDER */
@@ -233,13 +243,13 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(180px, 360px);
+  /* transform: translate(180px, 360px); */
 }
 .gender-container {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  transform: translate(-280px, 135px);
+  /* transform: translate(-280px, 135px); */
 }
 .gender-container label {
   cursor: pointer;
@@ -258,12 +268,12 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(200px, 320px);
+  /* transform: translate(200px, 320px); */
 }
 
 .age-container {
   display: inline-block;
-  transform: translate(-127px, 40px);
+  /* transform: translate(-127px, 40px); */
 }
 .age-container label {
   cursor: pointer;
@@ -279,14 +289,14 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(165px, 0px);
+  /* transform: translate(165px, 0px); */
 }
 
 .Height-container {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  transform: translate(20px, -50px);
+  /* transform: translate(20px, -50px); */
 }
 .Height-container label {
   cursor: pointer;
@@ -302,14 +312,14 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(165px, 0px);
+  /* transform: translate(165px, 0px); */
 }
 
 .Weight-container {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  transform: translate(167px, -150px);
+  /* transform: translate(167px, -150px); */
 }
 .Weight-container label {
   cursor: pointer;
@@ -325,13 +335,13 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(180px, 260px);
+  /* transform: translate(180px, 260px); */
 }
 .growable-container {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  transform: translate(-280px, 35px);
+  /* transform: translate(-280px, 35px); */
 }
 .growable-container label {
   cursor: pointer;
@@ -361,13 +371,13 @@ input [type="radio"] :checked {
   font-weight: 500;
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  margin-right: 5%;
-  margin-top: 0%;
-  border: 0ch;
-  border-radius: 12px;
-  display: flexbox;
+  /* margin-right: 5%; */
+  /* margin-top: 0%; */
+  /* border: 0ch; */
+  /* border-radius: 12px; */
+  /* display: flexbox; */
   color: rgb(255, 255, 255);
-  transform: translate(50px, 200px);
+  /* transform: translate(50px, 200px); */
 }
 
 #Submit_Button:hover {

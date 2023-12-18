@@ -147,124 +147,180 @@ interface REPLFunction {
     <div className="AlgorithmPage">
       <Header />
       <SearchHistory />
-      <h1 className="Age">Age</h1>
-      <h1 className="Gender">Gender</h1>
-      <h1 className="Weight">Weight (kg)</h1>
-      <h1 className="Activity-Level">Activity Level</h1>
-      <h1 className="Height">Height (cm)</h1>
-      <h1 className="Growable">Only Search Growable Foods? </h1>s
-      <h1 className="Weight-container">
-        <input id="txtbx3" onChange={handleWeightChange}></input>
-        <label htmlFor="txtbx3"> </label>
-      </h1>
-      <h1 className="Height-container">
-        <input id="txtbx2" onChange={handleHeightChange}></input>
-        <label htmlFor="txtbx2"> </label>
-      </h1>
-      <h1 className="age-container">
-        <input id="txtbx1" onChange={handleAgeChange}></input>
-        <label htmlFor="txtbx1"> </label>
-      </h1>
-      <h1 className="gender-container">
-        <input
-          type="radio"
-          id="cb4"
-          value="Male"
-          checked={gender === "Male"}
-          onChange={handleGenderChange}
-        ></input>
-        <label htmlFor="cb4">Male</label>
-      </h1>
-      <h1 className="gender-container">
-        <input
-          type="radio"
-          id="cb5"
-          value="Female"
-          checked={gender === "Female"}
-          onChange={handleGenderChange}
-        ></input>
-        <label htmlFor="cb5"> Female </label>
-      </h1>
-      {/* <select> */}
-      <h1 className="activity-level-container">
-        <input
-          type="radio"
-          id="rb1"
-          value="Sedentary" // might change later
-          checked={activityLevel === "Sedentary"}
-          onChange={handleActivityLevelChange}
-        ></input>
-        <label htmlFor="rb1">Sedentary </label>
-      </h1>
-      <h1 className="activity-level-container">
-        <input
-          type="radio"
-          id="rb2"
-          value="Lightly Active"
-          checked={activityLevel === "Lightly Active"}
-          onChange={handleActivityLevelChange}
-        ></input>
-        <label htmlFor="rb2"> Lightly Active </label>
-      </h1>
-      <h1 className="activity-level-container">
-        <input
-          type="radio"
-          id="rb3"
-          value="Moderately Active"
-          checked={activityLevel === "Moderately Active"}
-          onChange={handleActivityLevelChange}
-        ></input>
-        <label htmlFor="rb3"> Moderately Active </label>
-      </h1>
-      <h1 className="activity-level-container">
-        <input
-          type="radio"
-          id="rb4"
-          value="Very Active"
-          checked={activityLevel === "Very Active"}
-          onChange={handleActivityLevelChange}
-        ></input>
-        <label htmlFor="rb4"> Very Active </label>
-      </h1>
-      <h1 className="activity-level-container">
-        <input
-          type="radio"
-          id="rb5"
-          value="Extra Active"
-          checked={activityLevel === "Extra Active"}
-          onChange={handleActivityLevelChange}
-        ></input>
-        <label htmlFor="rb5"> Extra Active </label>
-      </h1>
-      <h1 className="growable-container">
-        <input
-          type="radio"
-          id="rb1"
-          value="Yes"
-          checked={growable === "Yes"}
-          onChange={handleGrowableChange}
-        ></input>
-        <label htmlFor="rb1"> </label>
-      </h1>
-      <h1 className="growable-container">
-        <input
-          type="radio"
-          id="rb2"
-          value="No"
-          checked={growable === "No"}
-          onChange={handleGrowableChange}
-        ></input>
-        <label htmlFor="rb2"> </label>
-      </h1>
-      <button
-        aria-label="Submit Button"
-        id="Submit_Button"
-        aria-description="This is the submit button. Click this to submit command you inputted."
-        onClick={() => handleSubmit()}
-        value="Save"
-      >
-        Submit Keyword
-      </button>
+      <div className="form-container">
+        {/* <h1 className="Age">Age</h1>
+        <h1 className="Gender">Gender</h1>
+        <h1 className="Weight">Weight (kg)</h1>
+        <h1 className="Activity-Level">Activity Level</h1>
+        <h1 className="Height">Height (cm)</h1>
+        <h1 className="Growable">Only Search Growable Foods? </h1> */}
+        <div className="Weight-container">
+          <h1>Weight (kg)</h1>
+          <input id="txtbx3" onChange={handleWeightChange}></input>
+          <label htmlFor="txtbx3"> </label>
+        </div>
+        <div className="Height-container">
+          <h1>Height (cm)</h1>
+          <input id="txtbx2" onChange={handleHeightChange}></input>
+          <label htmlFor="txtbx2"> </label>
+        </div>
+        <div className="age-container">
+          <h1>Age</h1>
+          <input id="txtbx1" onChange={handleAgeChange}></input>
+          <label htmlFor="txtbx1"> </label>
+        </div>
+        <div className="gender-container">
+          <h1>Gender</h1>
+          <input
+            type="radio"
+            id="cb4"
+            value="Male"
+            checked={gender === "Male"}
+            onChange={handleGenderChange}
+          ></input>
+          <label htmlFor="cb4">Male</label>
+          <input
+            type="radio"
+            id="cb5"
+            value="Female"
+            checked={gender === "Female"}
+            onChange={handleGenderChange}
+          ></input>
+          <label htmlFor="cb4">Female</label>
+        </div>
+        {/* <h1 className="gender-container">
+          <input
+            type="radio"
+            id="cb5"
+            value="Female"
+            checked={gender === "Female"}
+            onChange={handleGenderChange}
+          ></input>
+          <label htmlFor="cb5"> Female </label>
+        </h1> */}
+        {/* <select> */}
+        <div className="activity-level-container">
+          <h1>Activity Level</h1>
+          <input
+            type="radio"
+            id="rb1"
+            value="Sedentary" // might change later
+            checked={activityLevel === "Sedentary"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb1">Sedentary </label>
+          <input
+            type="radio"
+            id="rb2"
+            value="Lightly Active"
+            checked={activityLevel === "Lightly Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb2"> Lightly Active </label>
+          <input
+            type="radio"
+            id="rb3"
+            value="Moderately Active"
+            checked={activityLevel === "Moderately Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb3"> Moderately Active </label>
+          <input
+            type="radio"
+            id="rb4"
+            value="Very Active"
+            checked={activityLevel === "Very Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb4"> Very Active </label>
+          <input
+            type="radio"
+            id="rb5"
+            value="Extra Active"
+            checked={activityLevel === "Extra Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb5"> Extra Active </label>
+        </div>
+        {/* <h1 className="activity-level-container">
+          <input
+            type="radio"
+            id="rb2"
+            value="Lightly Active"
+            checked={activityLevel === "Lightly Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb2"> Lightly Active </label>
+        </h1>
+        <h1 className="activity-level-container">
+          <input
+            type="radio"
+            id="rb3"
+            value="Moderately Active"
+            checked={activityLevel === "Moderately Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb3"> Moderately Active </label>
+        </h1>
+        <h1 className="activity-level-container">
+          <input
+            type="radio"
+            id="rb4"
+            value="Very Active"
+            checked={activityLevel === "Very Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb4"> Very Active </label>
+        </h1>
+        <h1 className="activity-level-container">
+          <input
+            type="radio"
+            id="rb5"
+            value="Extra Active"
+            checked={activityLevel === "Extra Active"}
+            onChange={handleActivityLevelChange}
+          ></input>
+          <label htmlFor="rb5"> Extra Active </label>
+        </h1> */}
+        <div className="growable-container">
+          <h1 className="Growable">Only Search Growable Foods? </h1>
+          <input
+            type="radio"
+            id="rb1"
+            value="Yes"
+            checked={growable === "Yes"}
+            onChange={handleGrowableChange}
+          ></input>
+          <label htmlFor="rb1"> Yes </label>
+          <input
+            type="radio"
+            id="rb2"
+            value="No"
+            checked={growable === "No"}
+            onChange={handleGrowableChange}
+          ></input>
+          <label htmlFor="rb2"> No </label>
+        </div>
+        {/* <h1 className="growable-container">
+          <input
+            type="radio"
+            id="rb2"
+            value="No"
+            checked={growable === "No"}
+            onChange={handleGrowableChange}
+          ></input>
+          <label htmlFor="rb2"> No </label>
+        </h1> */}
+        <button
+          aria-label="Submit Button"
+          id="Submit_Button"
+          aria-description="This is the submit button. Click this to submit command you inputted."
+          onClick={() => handleSubmit()}
+          value="Save"
+        >
+          Submit All!
+        </button>
+      </div>
     </div>
   );
 }
