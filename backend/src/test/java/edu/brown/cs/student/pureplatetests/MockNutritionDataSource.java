@@ -27,7 +27,7 @@ import java.util.Set;
 import okio.Buffer;
 import org.testng.Assert;
 
-public class MockNutritionDataSource implements Query<String, List<String>> {
+public class MockNutritionDataSource implements Query<List<String>, List<String>> {
   private static Map<String, Map<String, Double>> nutritionalRequirements;
   private Map<String, Double> nutritionNeeds;
   private Map<String, Map<String, Double>> foodData;
@@ -55,7 +55,7 @@ public class MockNutritionDataSource implements Query<String, List<String>> {
    * @return
    * @throws DatasourceException
    */
-  public String query(List<String> target) throws DatasourceException {
+  public List<String> query(List<String> target) throws DatasourceException {
     //System.out.println("in query");
     String weight = target.get(0);
     String height = target.get(1);
@@ -75,7 +75,7 @@ public class MockNutritionDataSource implements Query<String, List<String>> {
     //System.out.println("still in query, passed ratios");
     this.calculateDeficiency(this.visited);
     //System.out.println("still in query, passed calc defs");
-    return this.getRecommendations().toString();
+    return this.getRecommendations();
   }
 
   private void getFoodDatabase() {

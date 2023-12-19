@@ -15,10 +15,10 @@ import org.json.simple.parser.ParseException;
  * percentage for a URI containing specific state and county identifiers. Unlike ApiCall, this class
  * stores previous API requests in a cache.
  */
-public class Cache implements Query<String, List<String>> {
+public class Cache implements Query<List<String>, List<String>> {
 
-  private final Query<String, List<String>> wrappedSearcher;
-  private final LoadingCache<List<String>, String> cache;
+  private final Query<List<String>, List<String>> wrappedSearcher;
+  private final LoadingCache<List<String>, List<String>> cache;
 
   /**
    * Constructor for CachedApiCall that establishes the cache.
@@ -27,7 +27,7 @@ public class Cache implements Query<String, List<String>> {
    * @param maxEntries    - the maximum number of entries the cache can store at a time
    * @param maxStorageMin - how long entries remain in the cache (in minutes)
    */
-  public Cache(Query<String, List<String>> toWrap, int maxEntries, int maxStorageMin) {
+  public Cache(Query<List<String>, List<String>> toWrap, int maxEntries, int maxStorageMin) {
     this.wrappedSearcher = toWrap;
     this.cache =
         CacheBuilder.newBuilder()
@@ -42,7 +42,7 @@ public class Cache implements Query<String, List<String>> {
 //                  }
 
                   @Override
-                  public String load(List<String> key)
+                  public List<String> load(List<String> key)
                       throws URISyntaxException, IOException, InterruptedException, ParseException, DatasourceException {
                     // We kept this print statement to aid our caching demo
                     System.out.println("called load for: " + key);
@@ -58,8 +58,8 @@ public class Cache implements Query<String, List<String>> {
    * @return the target's corresponding String broadband percentage
    */
   @Override
-  public String query(List<String> target) {
-    String result = this.cache.getUnchecked(target);
+  public List<String> query(List<String> target) {
+    List<String> result = this.cache.getUnchecked(target);
     // For debugging and demo (would remove in a "real" version):
     System.out.println(this.cache.stats());
     return result;

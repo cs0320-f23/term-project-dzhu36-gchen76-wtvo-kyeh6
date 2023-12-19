@@ -19,12 +19,12 @@ import spark.Route;
  */
 public class PurePlateHandler implements Route {
 
-   private static Query<String, List<String>> cache;
+   private static Query<List<String>, List<String>> cache;
 
   /**
    * Constructor for PurePlateHandler.
    */
-  public PurePlateHandler(Query<String, List<String>> myCache) {
+  public PurePlateHandler(Query<List<String>, List<String>> myCache) {
     cache = myCache;
   }
 

@@ -20,7 +20,7 @@ public class PurePlateServer {
   /**
    * Constructor for the PurePlateServer class.
    */
-  public PurePlateServer(Query<String, List<String>> cache, NutritionDataSource dataSource) {
+  public PurePlateServer(Query<List<String>, List<String>> cache, NutritionDataSource dataSource) {
     int port = 3233;
 
     Spark.port(port);

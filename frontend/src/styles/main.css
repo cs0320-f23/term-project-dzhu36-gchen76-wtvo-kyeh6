@@ -319,6 +319,7 @@ input [type="radio"] :checked {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
+  
   /* transform: translate(167px, -150px); */
 }
 .Weight-container label {
@@ -341,6 +342,7 @@ input [type="radio"] :checked {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
+  
   /* transform: translate(-280px, 35px); */
 }
 .growable-container label {
@@ -357,17 +359,18 @@ input [type="radio"] :checked {
 /*Search History */
 .searchHistory {
   font-weight: 500;
-  font-size: 40px;
+  font-size: 30px;
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(750px, 100px);
+  transform: translate(700px, 500px);
 }
 
  #Submit_Button {
   font-size: 20px;
-  background-color: red;
+  /* color: black; */
+  background-color: transparent;
   font-weight: 500;
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
@@ -376,14 +379,28 @@ input [type="radio"] :checked {
   /* border: 0ch; */
   /* border-radius: 12px; */
   /* display: flexbox; */
-  color: rgb(255, 255, 255);
+  color: rgb(70, 66, 66);
   /* transform: translate(50px, 200px); */
 }
 
 #Submit_Button:hover {
-  color: rgb(60, 173, 79); /* Change text color on hover */
-  background-color: blue;
+  color: rgb(0, 0, 0); /* Change text color on hover */
+  background-color: rgb(161, 161, 161);
   cursor: pointer;
+}
+
+.scroll-box {
+  height: 400px; /* maximum height of the box, feel free to change this! */
+  overflow-y: scroll;
+  font-size: small;
+}
+
+.scroll-box {
+  background: #f4f4f4;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  height: 400px; /* maximum height of the box, feel free to change this! */
+  width: 400px;
+  overflow-y: scroll;
 }
 /* .dropdown-check-list {
   display: inline-block;

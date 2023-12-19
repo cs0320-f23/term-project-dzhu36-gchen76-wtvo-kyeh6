@@ -1,32 +1,14 @@
 //will have name of patient box, age box, and weight box
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../Header";
 import SearchHistory from "./SearchHistory";
-import { Dispatch, SetStateAction, useState } from "react";
+import { getInitialFood } from "./FetchFoodData";
+import { Dispatch, SetStateAction } from "react";
 import { ChangeEvent } from 'react';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { FormControl, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { getPurePlateData } from "./FetchReccomendations";
-// import React, { ChangeEvent } from "react";
 
 function AlgorithmPage() {
-  // handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //     const checkboxes = document.querySelectorAll('.activity-level-container input[type="checkbox"]');
-
-  //     checkboxes.forEach((checkbox: HTMLInputElement) => {
-  //       if (checkbox !== event.target) {
-  //         checkbox.checked = false;
-  //       }
-  //     });
-  //   };
-
-  //   var checkList = document.getElementById("list1");
-  //   checkList.getElementsByClassName("anchor")[0].onclick = function (evt) {
-  //     if (checkList.classList.contains("visible"))
-  //       checkList.classList.remove("visible");
-  //     else checkList.classList.add("visible");
-  //   };
-
 
 /**
  * Defines how a REPL function should look
@@ -41,11 +23,12 @@ interface REPLFunction {
   const [gender, setGender] = useState("");
   const [activityLevel, setActivityLevel] = useState("");
   const [growable, setGrowable] = useState("");
+  const [history, setHistory] = useState<(string | string[])[]>([[]]);
 
   // const Age = document.getElementById('txtbx1')
-  const Height = document.getElementById('txtbx2')
-  const Weight = document.getElementById('txtbx3')
-  const submitBtn = document.getElementById('Submit_Button')
+  // const Height = document.getElementById('txtbx2')
+  // const Weight = document.getElementById('txtbx3')
+  // const submitBtn = document.getElementById('Submit_Button')
 
 
   function handleActivityLevelChange(event: ChangeEvent<HTMLInputElement>) {
@@ -136,24 +119,53 @@ interface REPLFunction {
     console.log(gender)
     console.log(activityLevel)
     if(weight !== "" && height !== "" && age !== "" && gender !== "" && activityLevel !== "" && growable !== "") {
-      console.log(getPurePlateData(weight, age, height, gender, activityLevel, growable, "Carrots,%20baby,%20raw`Tomato,%20roma"))
+      console.log(await getPurePlateData(weight, age, height, gender, activityLevel, growable, "Carrots,%20baby,%20raw`Tomato,%20roma"))
+      console.log("test");
+      setHistory([
+        ...history, await getPurePlateData(weight, age, height, gender, activityLevel, growable, "Carrots,%20baby,%20raw`Tomato,%20roma")]);
     } else {
       console.log("One parameter is empty")
     }
     // }
   }
 
+  const [foodOptions, setFoodOptions] = useState<string[]>([""]);
+  const [selectedFoods, setSelectedFoods] = useState<string[]>([""]);
+
+  useEffect(() => {
+    const fetchInitialFood = async () => {
+      const initialFoodData : string | string[] = await getInitialFood();
+      if (Array.isArray(initialFoodData) && typeof initialFoodData[0] === 'string') {
+        setFoodOptions(initialFoodData);
+      } else {
+
+      }
+    };
+
+    fetchInitialFood();
+  }, []);
+
+  const handleFoodChange = (food: string) => {
+    const isSelected = selectedFoods.includes(food);
+
+    if (isSelected) {
+      // Remove the food from the selected list
+      setSelectedFoods(selectedFoods.filter((item) => item !== food));
+    } else {
+      // Add the food to the selected list
+      setSelectedFoods([...selectedFoods, food]);
+    }
+  };
+
+  console.log("this is the history before running SearchHistory");
+  console.log(history);
   return (
     <div className="AlgorithmPage">
       <Header />
-      <SearchHistory />
+      <div className="Search History">
+          <SearchHistory historyData={history} />
+      </div>
       <div className="form-container">
-        {/* <h1 className="Age">Age</h1>
-        <h1 className="Gender">Gender</h1>
-        <h1 className="Weight">Weight (kg)</h1>
-        <h1 className="Activity-Level">Activity Level</h1>
-        <h1 className="Height">Height (cm)</h1>
-        <h1 className="Growable">Only Search Growable Foods? </h1> */}
         <div className="Weight-container">
           <h1>Weight (kg)</h1>
           <input id="txtbx3" onChange={handleWeightChange}></input>
@@ -188,16 +200,6 @@ interface REPLFunction {
           ></input>
           <label htmlFor="cb4">Female</label>
         </div>
-        {/* <h1 className="gender-container">
-          <input
-            type="radio"
-            id="cb5"
-            value="Female"
-            checked={gender === "Female"}
-            onChange={handleGenderChange}
-          ></input>
-          <label htmlFor="cb5"> Female </label>
-        </h1> */}
         {/* <select> */}
         <div className="activity-level-container">
           <h1>Activity Level</h1>
@@ -242,46 +244,6 @@ interface REPLFunction {
           ></input>
           <label htmlFor="rb5"> Extra Active </label>
         </div>
-        {/* <h1 className="activity-level-container">
-          <input
-            type="radio"
-            id="rb2"
-            value="Lightly Active"
-            checked={activityLevel === "Lightly Active"}
-            onChange={handleActivityLevelChange}
-          ></input>
-          <label htmlFor="rb2"> Lightly Active </label>
-        </h1>
-        <h1 className="activity-level-container">
-          <input
-            type="radio"
-            id="rb3"
-            value="Moderately Active"
-            checked={activityLevel === "Moderately Active"}
-            onChange={handleActivityLevelChange}
-          ></input>
-          <label htmlFor="rb3"> Moderately Active </label>
-        </h1>
-        <h1 className="activity-level-container">
-          <input
-            type="radio"
-            id="rb4"
-            value="Very Active"
-            checked={activityLevel === "Very Active"}
-            onChange={handleActivityLevelChange}
-          ></input>
-          <label htmlFor="rb4"> Very Active </label>
-        </h1>
-        <h1 className="activity-level-container">
-          <input
-            type="radio"
-            id="rb5"
-            value="Extra Active"
-            checked={activityLevel === "Extra Active"}
-            onChange={handleActivityLevelChange}
-          ></input>
-          <label htmlFor="rb5"> Extra Active </label>
-        </h1> */}
         <div className="growable-container">
           <h1 className="Growable">Only Search Growable Foods? </h1>
           <input
@@ -301,16 +263,25 @@ interface REPLFunction {
           ></input>
           <label htmlFor="rb2"> No </label>
         </div>
-        {/* <h1 className="growable-container">
-          <input
-            type="radio"
-            id="rb2"
-            value="No"
-            checked={growable === "No"}
-            onChange={handleGrowableChange}
-          ></input>
-          <label htmlFor="rb2"> No </label>
-        </h1> */}
+        <div className="food-container">
+          <h1>Select Foods</h1>
+          <FormControl component="fieldset">
+            <FormGroup>
+              {foodOptions.map((food) => (
+                <FormControlLabel
+                  key={food}
+                  control={
+                    <Checkbox
+                      checked={selectedFoods.includes(food)}
+                      onChange={() => handleFoodChange(food)}
+                    />
+                  }
+                  label={food}
+                />
+              ))}
+            </FormGroup>
+          </FormControl>
+        </div>
         <button
           aria-label="Submit Button"
           id="Submit_Button"

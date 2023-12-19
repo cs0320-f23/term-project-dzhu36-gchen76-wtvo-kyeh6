@@ -16,7 +16,7 @@ import java.util.*;
 
 import okio.Buffer;
 
-public class NutritionDataSource implements Query<String, List<String>> {
+public class NutritionDataSource implements Query<List<String>, List<String>> {
 
   /**
    * Stores the data for nutritional guidelines mapping from gender to a hashmap of guidelines
@@ -49,7 +49,7 @@ public class NutritionDataSource implements Query<String, List<String>> {
    * @return
    * @throws DatasourceException
    */
-  public String query(List<String> target) throws DatasourceException {
+  public List<String> query(List<String> target) throws DatasourceException {
     // note to self: check case where one of these empty
     String weight = target.get(0);
     String height = target.get(1);
@@ -79,7 +79,7 @@ public class NutritionDataSource implements Query<String, List<String>> {
       throw new DatasourceException("Unreasonable weight, height, or age parameter");
     }
     this.calculateDeficiency(this.visited);
-    return this.getRecommendations().toString();
+    return this.getRecommendations();
 
 
 
@@ -168,7 +168,7 @@ public class NutritionDataSource implements Query<String, List<String>> {
       priorityFoods = new PriorityQueue<>(
           Comparator.comparingDouble(scoreMap::get));
       priorityFoods.addAll(this.foodData.keySet());
-      recommendationList.add("`" + highestPriorityFood);
+      recommendationList.add(highestPriorityFood);
     }
     return recommendationList;
   }
