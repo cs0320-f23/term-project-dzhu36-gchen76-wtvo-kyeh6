@@ -110,17 +110,21 @@ public class NutritionDataSource implements Query<String, List<String>> {
               nutrient += this.foodData.get(foodKey).get(foodNutrients);
             }
           }
-          score -= 1 / (1 + Math.max(0.0,
-              this.nutritionNeeds.get(key) - nutrient));
+          String doubleStr = Double.toString(Math.max(0.0,
+                  this.nutritionNeeds.get(key) - nutrient));
+          String[] parts = doubleStr.split("\\.");
+          String shiftedDoubleStr = 0 + "." + parts[0] + parts[1];
+          double shiftedDouble = Float.parseFloat(shiftedDoubleStr);
+          score -= 1 / (1 + shiftedDouble);
           counter++;
         }
       }
       if (this.onlyGrowable) {
-        scoreMap.put(foodKey, counter > 0 ? ((this.visited.contains(foodKey) ? 1000.0 * -(score / counter) :
-                (!this.growable.contains(foodKey) ? 1000.00 * -(score / counter) : score / counter ))) : 1000.0); // if the food doesn't have the nutrient
+        scoreMap.put(foodKey, counter > 0 ? ((this.visited.contains(foodKey) ? -(counter / score) :
+                (!this.growable.contains(foodKey) ? -(counter / score) : score / counter ))) : 1000.0); // if the food doesn't have the nutrient
         System.out.println(scoreMap);
       } else {
-        scoreMap.put(foodKey, counter > 0 ? (this.visited.contains(foodKey) ? 1000.0 * -(score / counter) : score / counter) : 1000.0);
+        scoreMap.put(foodKey, counter > 0 ? (this.visited.contains(foodKey) ? -(counter / score) : score / counter) : 1000.0);
         System.out.println(scoreMap);
       }
     }
