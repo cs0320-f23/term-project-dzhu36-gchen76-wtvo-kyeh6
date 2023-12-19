@@ -168,7 +168,7 @@ public class NutritionDataSource implements Query<String, List<String>> {
       priorityFoods = new PriorityQueue<>(
           Comparator.comparingDouble(scoreMap::get));
       priorityFoods.addAll(this.foodData.keySet());
-      recommendationList.add(highestPriorityFood);
+      recommendationList.add("`" + highestPriorityFood);
     }
     return recommendationList;
   }
