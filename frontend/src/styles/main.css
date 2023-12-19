@@ -203,9 +203,8 @@ h4 {
   height: auto;
 }
 
-
 /**Algorithms Page*/
-.form-container{
+.form-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start; /* Align items to the start of the container */
@@ -215,6 +214,8 @@ h4 {
 
 .activity-level-container {
   display: inline-block;
+  transform: translate(0px, -350px);
+
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   /* transform: translate(-445px, 225px); */
@@ -234,7 +235,7 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  /* transform: translate(140px, 330px); */
+  /* transform: translate(0px, -350px); */
 }
 
 /* GENDER */
@@ -249,7 +250,7 @@ input [type="radio"] :checked {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  /* transform: translate(-280px, 135px); */
+  transform: translate(0px, -350px);
 }
 .gender-container label {
   cursor: pointer;
@@ -268,12 +269,12 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  /* transform: translate(200px, 320px); */
+  /* transform: translate(px, 320px); */
 }
 
 .age-container {
   display: inline-block;
-  /* transform: translate(-127px, 40px); */
+  transform: translate(0px, -350px);
 }
 .age-container label {
   cursor: pointer;
@@ -296,7 +297,7 @@ input [type="radio"] :checked {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  /* transform: translate(20px, -50px); */
+  transform: translate(0px, -350px);
 }
 .Height-container label {
   cursor: pointer;
@@ -312,18 +313,19 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  /* transform: translate(165px, 0px); */
+  /* transform: translate(0px, 100px); */
 }
 
 .Weight-container {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  
-  /* transform: translate(167px, -150px); */
+
+  transform: translate(0px, -350px);
 }
 .Weight-container label {
   cursor: pointer;
+  padding-top: 0%;
   font-size: medium;
 }
 .Weight-container input {
@@ -342,8 +344,7 @@ input [type="radio"] :checked {
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   display: inline-block;
-  
-  /* transform: translate(-280px, 35px); */
+  transform: translate(0px, -350px);
 }
 .growable-container label {
   cursor: pointer;
@@ -355,6 +356,9 @@ input [type="radio"] :checked {
 input [type="radio"] :checked {
   font-size: larger;
 }
+.food-container {
+  transform: translate(0px, -350px);
+}
 
 /*Search History */
 .searchHistory {
@@ -364,28 +368,29 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  transform: translate(700px, 500px);
+  transform: translate(700px, 125px);
 }
 
- #Submit_Button {
+#Submit_Button {
   font-size: 20px;
   /* color: black; */
-  background-color: transparent;
+  transform: translate(550px, 0px);
+  background-color: #685645;
   font-weight: 500;
   font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   /* margin-right: 5%; */
   /* margin-top: 0%; */
   /* border: 0ch; */
-  /* border-radius: 12px; */
+  border-radius: 5px;
   /* display: flexbox; */
-  color: rgb(70, 66, 66);
-  /* transform: translate(50px, 200px); */
+  color: rgb(247, 247, 247);
+  transform: translate(500px, -350px);
 }
 
 #Submit_Button:hover {
-  color: rgb(0, 0, 0); /* Change text color on hover */
-  background-color: rgb(161, 161, 161);
+  color: rgb(62, 142, 75);
+  /* background-color: rgb(161, 161, 161); */
   cursor: pointer;
 }
 

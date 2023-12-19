@@ -4,18 +4,22 @@ import Header from "../../Header";
 import SearchHistory from "./SearchHistory";
 import { getInitialFood } from "./FetchFoodData";
 import { Dispatch, SetStateAction } from "react";
-import { ChangeEvent } from 'react';
-import { FormControl, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { ChangeEvent } from "react";
+import {
+  FormControl,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import { getPurePlateData } from "./FetchReccomendations";
 
 function AlgorithmPage() {
-
-/**
- * Defines how a REPL function should look
- */
-interface REPLFunction {
-  (args: string[]): Promise<string | string[][]>;
-}
+  /**
+   * Defines how a REPL function should look
+   */
+  interface REPLFunction {
+    (args: string[]): Promise<string | string[][]>;
+  }
 
   const [age, setAge] = useState("");
   const [weight, setWeight] = useState("");
@@ -30,11 +34,10 @@ interface REPLFunction {
   // const Weight = document.getElementById('txtbx3')
   // const submitBtn = document.getElementById('Submit_Button')
 
-
   function handleActivityLevelChange(event: ChangeEvent<HTMLInputElement>) {
     setActivityLevel(event.target.value);
   }
-  
+
   function handleGenderChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (value === "Male" || value === "Female") {
@@ -45,19 +48,18 @@ interface REPLFunction {
       // setError('Please enter a valid number for age');
     }
   }
-  
+
   function handleWeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (!isNaN(parseFloat(value)) && parseFloat(value).toString() === value) {
       setWeight(value); // Update the state if the input is a valid number
-    } 
-    else {
-      setWeight('');
-      window.alert("Value entered is not a valid number")
+    } else {
+      setWeight("");
+      window.alert("Value entered is not a valid number");
       // setError('Please enter a valid number for age');
     }
   }
-  
+
   function handleHeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (!isNaN(parseInt(value)) && parseInt(value).toString() === value) {
@@ -68,21 +70,19 @@ interface REPLFunction {
       window.alert("Value entered is not a valid number");
     }
   }
-  
+
   function handleAgeChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
-    if (typeof value === 'string'){
+    if (typeof value === "string") {
     }
     if (!isNaN(parseInt(value)) && parseInt(value).toString() === value) {
       setAge(value);
-    } 
-    else {
-      setAge('');
-      window.alert("Value entered is not a valid age")
-
+    } else {
+      setAge("");
+      window.alert("Value entered is not a valid age");
     }
   }
-  
+
   function handleGrowableChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (value === "Yes" || value === "No") {
@@ -93,10 +93,9 @@ interface REPLFunction {
     }
   }
 
-
   async function handleSubmit(): Promise<void> {
     console.log("Please print something out");
-    
+
     // if ()
     // if ( && formData.textbox2 && formData.checkbox) {
     // set history later
@@ -112,19 +111,46 @@ interface REPLFunction {
     //     [commandString, "searched for " + tokens[0]],
     //   ]);
     // }
-    // TODO: manually replace spaces with %20 
-    console.log(weight)
-    console.log(height)
-    console.log(age)
-    console.log(gender)
-    console.log(activityLevel)
-    if(weight !== "" && height !== "" && age !== "" && gender !== "" && activityLevel !== "" && growable !== "") {
-      console.log(await getPurePlateData(weight, age, height, gender, activityLevel, growable, "Carrots,%20baby,%20raw`Tomato,%20roma"))
+    // TODO: manually replace spaces with %20
+    console.log(weight);
+    console.log(height);
+    console.log(age);
+    console.log(gender);
+    console.log(activityLevel);
+    if (
+      weight !== "" &&
+      height !== "" &&
+      age !== "" &&
+      gender !== "" &&
+      activityLevel !== "" &&
+      growable !== ""
+    ) {
+      console.log(
+        await getPurePlateData(
+          weight,
+          age,
+          height,
+          gender,
+          activityLevel,
+          growable,
+          "Carrots,%20baby,%20raw`Tomato,%20roma"
+        )
+      );
       console.log("test");
       setHistory([
-        ...history, await getPurePlateData(weight, age, height, gender, activityLevel, growable, "Carrots,%20baby,%20raw`Tomato,%20roma")]);
+        ...history,
+        await getPurePlateData(
+          weight,
+          age,
+          height,
+          gender,
+          activityLevel,
+          growable,
+          "Carrots,%20baby,%20raw`Tomato,%20roma"
+        ),
+      ]);
     } else {
-      console.log("One parameter is empty")
+      console.log("One parameter is empty");
     }
     // }
   }
@@ -134,11 +160,13 @@ interface REPLFunction {
 
   useEffect(() => {
     const fetchInitialFood = async () => {
-      const initialFoodData : string | string[] = await getInitialFood();
-      if (Array.isArray(initialFoodData) && typeof initialFoodData[0] === 'string') {
+      const initialFoodData: string | string[] = await getInitialFood();
+      if (
+        Array.isArray(initialFoodData) &&
+        typeof initialFoodData[0] === "string"
+      ) {
         setFoodOptions(initialFoodData);
       } else {
-
       }
     };
 
@@ -163,7 +191,7 @@ interface REPLFunction {
     <div className="AlgorithmPage">
       <Header />
       <div className="Search History">
-          <SearchHistory historyData={history} />
+        <SearchHistory historyData={history} />
       </div>
       <div className="form-container">
         <div className="Weight-container">
@@ -289,7 +317,7 @@ interface REPLFunction {
           onClick={() => handleSubmit()}
           value="Save"
         >
-          Submit All!
+          Submit
         </button>
       </div>
     </div>
