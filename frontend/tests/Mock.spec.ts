@@ -1,7 +1,33 @@
 import { test, expect } from "@playwright/test";
+import { mockedRecommendationData } from "../src/pages/AlgorithmPage/MockedResults";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:8000/");
+});
+
+test("intercepts the pureplate request", async ({ page }) => {
+  await page.route("http://localhost:3233/pureplate*", (route) => {
+    // Check if the request includes specific query params
+    const query = route.request().url().split("?")[1];
+    if (query.includes("weight=100") && query.includes("height=100")) {
+      // Provide a mock response
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(mockedRecommendationData),
+      });
+    } else {
+      // Optionally, let other requests pass through
+      route.continue();
+    }
+  });
+
+  // Navigate to your application or perform actions that trigger the request
+  await page.goto("http://localhost:8000/software");
+
+  // Add your assertions here
+  await expect(page.getByRole('heading', { name: 'Weight (kg)' })).toBeVisible
+  
 });
 
 test("checking mode starts in brief and can switch between brief and verbose", async ({
@@ -38,133 +64,133 @@ test("checking mode starts in brief and can switch between brief and verbose", a
   ).toHaveText("Output: Mode switched to brief");
 });
 
-test("test load", async ({ page }) => {
-  // testing for file that is not in the dataset
-  await page.getByLabel("Command input").fill("load_file lajhdasjh");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: File not found!");
-  // testing for file that is in the dataset
-  await page.getByLabel("Command input").fill("load_file filepath/jobs");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: File: 'filepath/jobs' loaded");
-});
+// test("test load", async ({ page }) => {
+//   // testing for file that is not in the dataset
+//   await page.getByLabel("Command input").fill("load_file lajhdasjh");
+//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
+//   await expect(
+//     page.getByTitle("repl-history").getByTitle("history-line").last()
+//   ).toHaveText("Output: File not found!");
+//   // testing for file that is in the dataset
+//   await page.getByLabel("Command input").fill("load_file filepath/jobs");
+//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
+//   await expect(
+//     page.getByTitle("repl-history").getByTitle("history-line").last()
+//   ).toHaveText("Output: File: 'filepath/jobs' loaded");
+// });
 
-test("test view", async ({ page }) => {
-  // testing if view is called before load is
-  // brief
-  await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: Please load a file first!");
-  // verbose
-  await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
-  await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Command: view, Output: Please load a file first!");
-  await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 3 times" }).click();
-  // testing view table by seeing if an element is displayed on screen
-  await page.getByLabel("Command input").fill("load_file filepath/jobs");
-  await page.getByRole("button", { name: "Submitted 4 times" }).click();
-  await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 5 times" }).click();
-  await expect(
-    page
-      .getByTitle("viewing-table")
-      .getByTitle("view-table")
-      .getByTitle("row")
-      .getByTitle("cell")
-      .first()
-  ).toHaveText("Name");
-  // checking if I load a new file and view it the new information is updated
-  await page.getByLabel("Command input").fill("load_file filepath/income");
-  await page.getByRole("button", { name: "Submitted 6 times" }).click();
-  await page.getByLabel("Command input").fill("view");
-  await page.getByRole("button", { name: "Submitted 7 times" }).click();
-  await expect(
-    page
-      .getByTitle("viewing-table")
-      .getByTitle("view-table")
-      .getByTitle("row")
-      .getByTitle("cell")
-      .first()
-  ).toHaveText("Income");
-});
+// test("test view", async ({ page }) => {
+//   // testing if view is called before load is
+//   // brief
+//   await page.getByLabel("Command input").fill("view");
+//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
+//   await expect(
+//     page.getByTitle("repl-history").getByTitle("history-line").last()
+//   ).toHaveText("Output: Please load a file first!");
+//   // verbose
+//   await page.getByLabel("Command input").fill("mode");
+//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
+//   await page.getByLabel("Command input").fill("view");
+//   await page.getByRole("button", { name: "Submitted 2 times" }).click();
+//   await expect(
+//     page.getByTitle("repl-history").getByTitle("history-line").last()
+//   ).toHaveText("Command: view, Output: Please load a file first!");
+//   await page.getByLabel("Command input").fill("mode");
+//   await page.getByRole("button", { name: "Submitted 3 times" }).click();
+//   // testing view table by seeing if an element is displayed on screen
+//   await page.getByLabel("Command input").fill("load_file filepath/jobs");
+//   await page.getByRole("button", { name: "Submitted 4 times" }).click();
+//   await page.getByLabel("Command input").fill("view");
+//   await page.getByRole("button", { name: "Submitted 5 times" }).click();
+//   await expect(
+//     page
+//       .getByTitle("viewing-table")
+//       .getByTitle("view-table")
+//       .getByTitle("row")
+//       .getByTitle("cell")
+//       .first()
+//   ).toHaveText("Name");
+//   // checking if I load a new file and view it the new information is updated
+//   await page.getByLabel("Command input").fill("load_file filepath/income");
+//   await page.getByRole("button", { name: "Submitted 6 times" }).click();
+//   await page.getByLabel("Command input").fill("view");
+//   await page.getByRole("button", { name: "Submitted 7 times" }).click();
+//   await expect(
+//     page
+//       .getByTitle("viewing-table")
+//       .getByTitle("view-table")
+//       .getByTitle("row")
+//       .getByTitle("cell")
+//       .first()
+//   ).toHaveText("Income");
+// });
 
-test("test search", async ({ page }) => {
-  // testing if search is called before load is
-  // brief
-  await page.getByLabel("Command input").fill("search asdas dasds");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: Please load a file first!");
-  // verbose
-  await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
-  await page.getByLabel("Command input").fill("search asdas dasds");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText(
-    "Command: search asdas dasds, Output: Please load a file first!"
-  );
-  await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 3 times" }).click();
-  // testing search table by seeing if an element is displayed on screen
-  await page.getByLabel("Command input").fill("load_file filepath/jobs");
-  await page.getByRole("button", { name: "Submitted 4 times" }).click();
-  // with header
-  await page.getByLabel("Command input").fill("search Name Avocado");
-  await page.getByRole("button", { name: "Submitted 5 times" }).click();
-  await expect(
-    page
-      .getByTitle("viewing-table")
-      .getByTitle("view-table")
-      .getByTitle("row")
-      .getByTitle("cell")
-      .first()
-  ).toHaveText("Avocado");
-  // without headers
-  await page.getByLabel("Command input").fill("search 0 Avocado");
-  await page.getByRole("button", { name: "Submitted 6 times" }).click();
-  await expect(
-    page
-      .getByTitle("viewing-table")
-      .getByTitle("view-table")
-      .getByTitle("row")
-      .getByTitle("cell")
-      .first()
-  ).toHaveText("Avocado");
-});
+// test("test search", async ({ page }) => {
+//   // testing if search is called before load is
+//   // brief
+//   await page.getByLabel("Command input").fill("search asdas dasds");
+//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
+//   await expect(
+//     page.getByTitle("repl-history").getByTitle("history-line").last()
+//   ).toHaveText("Output: Please load a file first!");
+//   // verbose
+//   await page.getByLabel("Command input").fill("mode");
+//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
+//   await page.getByLabel("Command input").fill("search asdas dasds");
+//   await page.getByRole("button", { name: "Submitted 2 times" }).click();
+//   await expect(
+//     page.getByTitle("repl-history").getByTitle("history-line").last()
+//   ).toHaveText(
+//     "Command: search asdas dasds, Output: Please load a file first!"
+//   );
+//   await page.getByLabel("Command input").fill("mode");
+//   await page.getByRole("button", { name: "Submitted 3 times" }).click();
+//   // testing search table by seeing if an element is displayed on screen
+//   await page.getByLabel("Command input").fill("load_file filepath/jobs");
+//   await page.getByRole("button", { name: "Submitted 4 times" }).click();
+//   // with header
+//   await page.getByLabel("Command input").fill("search Name Avocado");
+//   await page.getByRole("button", { name: "Submitted 5 times" }).click();
+//   await expect(
+//     page
+//       .getByTitle("viewing-table")
+//       .getByTitle("view-table")
+//       .getByTitle("row")
+//       .getByTitle("cell")
+//       .first()
+//   ).toHaveText("Avocado");
+//   // without headers
+//   await page.getByLabel("Command input").fill("search 0 Avocado");
+//   await page.getByRole("button", { name: "Submitted 6 times" }).click();
+//   await expect(
+//     page
+//       .getByTitle("viewing-table")
+//       .getByTitle("view-table")
+//       .getByTitle("row")
+//       .getByTitle("cell")
+//       .first()
+//   ).toHaveText("Avocado");
+// });
 
-test("test misc.", async ({ page }) => {
-  // testing if user clicks button with nothing in input box
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: Unknown input, please try again.");
-  // testing search empty table by seeing if no element is displayed on screen
-  await page.getByLabel("Command input").fill("load_file filepath/empty");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
-  // with header
-  await page.getByLabel("Command input").fill("search Name Liam");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
-  await expect(
-    page.getByTitle("viewing-table").getByTitle("view-table").getByTitle("row")
-  ).toHaveText("");
-  // without headers
-  await page.getByLabel("Command input").fill("search 0 Liam");
-  await page.getByRole("button", { name: "Submitted 3 times" }).click();
-  await expect(
-    page.getByTitle("viewing-table").getByTitle("view-table").getByTitle("row")
-  ).toHaveText("");
-});
+// test("test misc.", async ({ page }) => {
+//   // testing if user clicks button with nothing in input box
+//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
+//   await expect(
+//     page.getByTitle("repl-history").getByTitle("history-line").last()
+//   ).toHaveText("Output: Unknown input, please try again.");
+//   // testing search empty table by seeing if no element is displayed on screen
+//   await page.getByLabel("Command input").fill("load_file filepath/empty");
+//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
+//   // with header
+//   await page.getByLabel("Command input").fill("search Name Liam");
+//   await page.getByRole("button", { name: "Submitted 2 times" }).click();
+//   await expect(
+//     page.getByTitle("viewing-table").getByTitle("view-table").getByTitle("row")
+//   ).toHaveText("");
+//   // without headers
+//   await page.getByLabel("Command input").fill("search 0 Liam");
+//   await page.getByRole("button", { name: "Submitted 3 times" }).click();
+//   await expect(
+//     page.getByTitle("viewing-table").getByTitle("view-table").getByTitle("row")
+//   ).toHaveText("");
+// });

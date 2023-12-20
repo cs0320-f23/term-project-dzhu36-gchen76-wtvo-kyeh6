@@ -2,10 +2,6 @@ package edu.brown.cs.student.pureplatetests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.testng.Assert.assertFalse;
-import java.util.List;
-import static org.testng.Assert.assertListNotContains;
-import static org.testng.Assert.assertListNotContainsObject;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;

@@ -1,5 +1,10 @@
 const recommendationsURL = "http://localhost:3233/pureplate?"
 
+/**
+ * Converts the list of foods into a delimited string to be placed into url
+ * @param list list of foods that the user has selected
+ * @returns a string representation of the list of foods
+ */
 function createFoodString(list: string[]) : string{
   let condensedList = ""
   condensedList = list[0]
@@ -10,6 +15,7 @@ function createFoodString(list: string[]) : string{
   return condensedList.replace(/ /g, "%20").trim();
 
 }
+
 export async function getPurePlateData(weight: string, age: string, height: string, gender: string, activityLevel: string, growable: string, foods: string[]): Promise<string | string[]> {
     try {
         // return "hi"
@@ -47,6 +53,11 @@ interface SuccessfulRecommendationCall {
   recommendations: string;
 }
 
+/**
+ * Checks if a json 
+ * @param rjson 
+ * @returns 
+ */
 function isSuccessfulRecommendationCall(
   rjson: any
 ): rjson is SuccessfulRecommendationCall {

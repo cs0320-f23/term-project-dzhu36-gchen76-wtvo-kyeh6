@@ -6,10 +6,6 @@ import { getInitialFood } from "./FetchFoodData";
 import { Dispatch, SetStateAction } from "react";
 import { ChangeEvent } from "react";
 import {
-  FormControl,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
   Autocomplete,
   TextField
 } from "@mui/material";
@@ -163,17 +159,17 @@ function AlgorithmPage() {
     fetchInitialFood();
   }, []);
 
-  const handleFoodChange = (food: string) => {
-    const isSelected = selectedFoods.includes(food);
+  // const handleFoodChange = (food: string) => {
+  //   const isSelected = selectedFoods.includes(food);
 
-    if (isSelected) {
-      // Remove the food from the selected list
-      setSelectedFoods(selectedFoods.filter((item) => item !== food));
-    } else {
-      // Add the food to the selected list
-      setSelectedFoods([...selectedFoods, food]);
-    }
-  };
+  //   if (isSelected) {
+  //     // Remove the food from the selected list
+  //     setSelectedFoods(selectedFoods.filter((item) => item !== food));
+  //   } else {
+  //     // Add the food to the selected list
+  //     setSelectedFoods([...selectedFoods, food]);
+  //   }
+  // };
 
   console.log("this is the history before running SearchHistory");
   console.log(history);
@@ -281,6 +277,7 @@ function AlgorithmPage() {
           ></input>
           <label htmlFor="rb2"> No </label>
         </div>
+        <div className="selectFoods">Select Foods</div>
         <div className="food-container">
           <Autocomplete
             multiple
@@ -291,12 +288,11 @@ function AlgorithmPage() {
             disableCloseOnSelect
             getOptionLabel={(option) => option}
             renderInput={(params) => (
-              <TextField {...params} variant="standard" label="Select Foods" />
+              <TextField {...params} variant="standard"/>
             )}
           />
         </div>
-        <div className="selectFoods">Select Foods</div>
-        <div className="food-container">
+        {/* <div className="food-container">
           <FormControl component="fieldset">
             <FormGroup>
               {foodOptions.map((food) => (
@@ -313,7 +309,7 @@ function AlgorithmPage() {
               ))}
             </FormGroup>
           </FormControl>
-        </div>
+        </div> */}
         <button
           aria-label="Submit Button"
           id="Submit_Button"

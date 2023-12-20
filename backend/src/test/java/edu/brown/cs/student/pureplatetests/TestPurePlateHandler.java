@@ -83,7 +83,6 @@ public class TestPurePlateHandler {
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseMap =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-    //System.out.println(responseMap);
     assertEquals(2, responseMap.size());
     assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
     assertEquals("success", responseMap.get("result"));

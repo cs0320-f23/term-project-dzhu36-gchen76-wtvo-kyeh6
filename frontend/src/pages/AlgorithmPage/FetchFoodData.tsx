@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { FormControl, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
-
 
 const foodsURL = "http://localhost:3233/data?"
 

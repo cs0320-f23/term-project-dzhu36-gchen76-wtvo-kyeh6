@@ -3,12 +3,9 @@ package edu.brown.cs.student.pureplate;
 import static spark.Spark.after;
 
 import edu.brown.cs.student.pureplate.datasources.Cache;
-import edu.brown.cs.student.pureplate.datasources.DatasourceException;
 import edu.brown.cs.student.pureplate.datasources.NutritionDataSource;
 import edu.brown.cs.student.pureplate.datasources.Query;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import spark.Spark;
 
 /**

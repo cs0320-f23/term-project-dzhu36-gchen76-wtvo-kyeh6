@@ -1,14 +1,9 @@
 package edu.brown.cs.student.pureplatetests;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
+
 import edu.brown.cs.student.pureplate.datasources.CsvParser;
 import edu.brown.cs.student.pureplate.datasources.DatasourceException;
-import edu.brown.cs.student.pureplate.datasources.NutritionDataSource.Food;
-import edu.brown.cs.student.pureplate.datasources.NutritionDataSource.FoodNutrient;
 import edu.brown.cs.student.pureplate.datasources.Query;
-import edu.brown.cs.student.pureplate.key.apikey;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-import okio.Buffer;
-import org.testng.Assert;
 
 public class MockNutritionDataSource implements Query<List<String>, List<String>> {
   private static Map<String, Map<String, Double>> nutritionalRequirements;
@@ -57,7 +50,6 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
    * @throws DatasourceException
    */
   public List<String> query(List<String> target) throws DatasourceException {
-    //System.out.println("in query");
     String weight = target.get(0);
     String height = target.get(1);
     String age = target.get(2);
@@ -78,15 +70,6 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
     }
 
     try {
-//      if (weight.length() > 4) {
-//        weight = weight.substring(0,5);
-//      }
-//      if (height.length() > 4) {
-//        height = height.substring(0, 5);
-//      }
-//      if (age.length() > 4) {
-//        age = age.substring(0, 5);
-//      }
       Double weight_num = Double.parseDouble(weight);
       Double height_num = Double.parseDouble(height);
       Double age_num = Double.parseDouble(age);
@@ -99,14 +82,12 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
       System.out.println(e.getClass());
       throw new DatasourceException("Unreasonable weight, height, or age parameter");
     }
-    //System.out.println("still in query, passed ratios");
     try {
       this.calculateDeficiency(this.visited);
     } catch (NullPointerException e) {
       throw new DatasourceException("Unrecognized food");
     }
 
-    //System.out.println("still in query, passed calc defs");
     return this.getRecommendations();
   }
 
@@ -133,12 +114,10 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
   }
 
   private Map<String, Double> getScore() {
-    //System.out.println("in get score");
     Map<String, Double> scoreMap = new HashMap<>();
     for (String foodKey : this.foodData.keySet()) {
       double score = 0.0;
       int counter = 0;
-//      for (String key : this.foodData.get(foodKey).keySet()) {
       for (String key : this.nutritionNeeds.keySet()) {
         if (this.nutritionNeeds.get(key) > 0.0) {
           double nutrient = 0;
@@ -160,34 +139,25 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
         scoreMap.put(foodKey, counter > 0 ? (this.visited.contains(foodKey) ? -(counter / score) : score / counter) : 1000.0);
         System.out.println(scoreMap);
       }
-      // scoreMap.put(foodKey,  counter > 0 ? (this.visited.contains(foodKey) ? 99.0 : score/counter) : 0.0 ); // if the food doesn't have the nutrient
     }
     return scoreMap;
   }
 
   private List<String> getRecommendations() {
     // maybe dont use mocked csv but replace this func instead
-    //System.out.println("in get recs");
     List<String> recommendationList = new ArrayList<>();
     Map<String, Double> scoreMap = this.getScore();
     // populate priority queue using getScore
-    //System.out.println("Priority Queue");
     PriorityQueue<String> priorityFoods = new PriorityQueue<>(
         Comparator.comparingDouble(scoreMap::get));
-    //System.out.println("Recommendation before while loop");
     while (!this.nutritionNeeds.entrySet().stream()
         .filter(entry -> !entry.getKey().equals("Calorie Level Assessed"))
         .allMatch(entry -> entry.getValue() <= 0.0)){
-      //System.out.println("Beginning of while loop");
       // add all foods to priority queue and pull the first food out and add to returnlist
       priorityFoods.addAll(this.foodData.keySet());
 
       // reupdate nutritional needs based off that food
       String highestPriorityFood = priorityFoods.peek();
-      //System.out.println("replacing nutrition needs: " + highestPriorityFood);
-
-//      this.nutritionNeeds.replaceAll((n, v) -> this.nutritionNeeds.get(n)
-//          - this.foodData.get(highestPriorityFood).get(n));
 
       // mark the food as already recommended
       this.visited.add(highestPriorityFood);
@@ -195,7 +165,6 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
       // reupdate nutritional needs based off that food
       this.calculateDeficiency(this.visited);
 
-      //System.out.println("Update score map");
       // update Scores
       scoreMap = this.getScore();
 
@@ -205,7 +174,6 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
       priorityFoods.addAll(this.foodData.keySet());
       recommendationList.add(highestPriorityFood);
     }
-    //System.out.println("at end of get recs");
     return recommendationList;
   }
 
@@ -268,14 +236,12 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
    * @param gender
    */
   public void calculateRatios(double caloricRequirements, String gender) {
-    //System.out.println("in calc ratios");
     // strings to be able to be converted to double, otherwise number format exception
     // check csv file
     gender = gender.toLowerCase();
-    //System.out.println("parsing csv");
-    //System.out.println(this.nutritionalRequirements.keySet());
+
     double caloricRatio = caloricRequirements / this.nutritionalRequirements.get(gender).get("Calorie Level Assessed");
-    //System.out.println(caloricRatio);
+
     for (String key : this.nutritionalRequirements.get(gender).keySet()) {
       this.nutritionNeeds.put(key, this.nutritionalRequirements.get(gender).get(key) / caloricRatio);
     }
@@ -284,16 +250,13 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
   public void calculateDeficiency(List<String> foods){
     System.out.println("fooddata");
     System.out.println(this.foodData);
-    //System.out.println("in calc defs");
+
     Set<String> foodSet = new HashSet<>(foods);
-//    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
+
     for (String food : foodSet) {
       System.out.println("In outer for loop " + food);
       System.out.println(this.foodData.get(food).keySet());
-//      for (String key : this.foodData.get(food).keySet()) {
       for (String key : this.nutritionNeeds.keySet()) {
-        //System.out.println(this.nutritionNeeds);
-        //System.out.println(this.foodData.get(food));
 
         // correctly assigns the nutrition value for the food
         double nutritionValue = 0;
@@ -302,9 +265,6 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
             nutritionValue += this.foodData.get(food).get(foodNutrients);
           }
         }
-//        if (key.equals("Vitamin D")) {
-//          System.out.println("Deficiency Vitamin D: " + nutritionValue);
-//        }
         this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - nutritionValue);
       }
     }
@@ -324,13 +284,5 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
     } catch (IOException e) {
       return new ArrayList<>();
     }
-  }
-
-  public Map<String, Map<String, Double>> getFoodData () {
-    return new HashMap<>(this.foodData);
-  }
-
-  public Map<String, Double> getNutritionNeeds() {
-    return new HashMap<>(this.nutritionNeeds);
   }
 }

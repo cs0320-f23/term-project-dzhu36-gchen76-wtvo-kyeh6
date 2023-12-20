@@ -2,7 +2,6 @@ package edu.brown.cs.student.pureplatetests;
 
 import edu.brown.cs.student.pureplate.datasources.CsvParser;
 import edu.brown.cs.student.pureplate.datasources.DatasourceException;
-import java.io.IOException;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.testng.Assert;
