@@ -22,15 +22,12 @@ function AlgorithmPage() {
   const [growable, setGrowable] = useState("");
   const [history, setHistory] = useState<(string | string[])[]>([[]]);
 
-  // const Age = document.getElementById('txtbx1')
-  // const Height = document.getElementById('txtbx2')
-  // const Weight = document.getElementById('txtbx3')
-  // const submitBtn = document.getElementById('Submit_Button')
 
+  // This function handles the changing of activity checkbox
   function handleActivityLevelChange(event: ChangeEvent<HTMLInputElement>) {
     setActivityLevel(event.target.value);
   }
-
+  //This function handles the changing of gender checkbox
   function handleGenderChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (value === "Male" || value === "Female") {
@@ -38,10 +35,9 @@ function AlgorithmPage() {
     } else {
       setGender("");
       window.alert("Please select a gender");
-      // setError('Please enter a valid number for age');
     }
   }
-
+  //This function handles the changing of weight vale
   function handleWeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (value !== "" && !isNaN(parseFloat(value)) && parseFloat(value).toString() === value
@@ -55,7 +51,7 @@ function AlgorithmPage() {
       setWeight("");
     }
   }
-
+  //This function handles the changing of height value
   function handleHeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (
@@ -71,7 +67,7 @@ function AlgorithmPage() {
       setHeight("")
     }
   }
-
+  //This function handles the age change
   function handleAgeChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (value !== "" && !isNaN(parseInt(value)) && parseInt(value).toString() === value) {
@@ -83,7 +79,7 @@ function AlgorithmPage() {
       setAge("")
     }
   }
-
+  // This function handles checking the growable
   function handleGrowableChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     if (value === "Yes" || value === "No") {
@@ -139,7 +135,6 @@ function AlgorithmPage() {
     } else {
       console.log("One parameter is empty");
     }
-    // }
   }
 
   const [foodOptions, setFoodOptions] = useState<string[]>([""]);
@@ -160,20 +155,6 @@ function AlgorithmPage() {
     fetchInitialFood();
   }, []);
 
-  // const handleFoodChange = (food: string) => {
-  //   const isSelected = selectedFoods.includes(food);
-
-  //   if (isSelected) {
-  //     // Remove the food from the selected list
-  //     setSelectedFoods(selectedFoods.filter((item) => item !== food));
-  //   } else {
-  //     // Add the food to the selected list
-  //     setSelectedFoods([...selectedFoods, food]);
-  //   }
-  // };
-
-  console.log("this is the history before running SearchHistory");
-  console.log(history);
   return (
     <div className="AlgorithmPage">
       <Header />
@@ -220,20 +201,20 @@ function AlgorithmPage() {
           <h1>Activity Level</h1>
           <input
             type="radio"
-            id="rb1"
+            id="rb6"
             value="Sedentary" // might change later
             checked={activityLevel === "Sedentary"}
             onChange={handleActivityLevelChange}
           ></input>
-          <label htmlFor="rb1">Sedentary </label>
+          <label htmlFor="rb6">Sedentary </label>
           <input
             type="radio"
-            id="rb2"
+            id="rb7"
             value="Lightly Active"
             checked={activityLevel === "Lightly Active"}
             onChange={handleActivityLevelChange}
           ></input>
-          <label htmlFor="rb2"> Lightly Active </label>
+          <label htmlFor="rb7"> Lightly Active </label>
           <input
             type="radio"
             id="rb3"

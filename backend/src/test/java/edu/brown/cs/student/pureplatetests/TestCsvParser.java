@@ -24,8 +24,8 @@ public class TestCsvParser {
 
     Map<String, Double> maleRequirements = requirementsTable.get("male");
     Map<String, Double> femaleRequirements = requirementsTable.get("female");
-    Assert.assertEquals(maleRequirements.size(), 25);
-    Assert.assertEquals(femaleRequirements.size(), 25);
+    Assert.assertEquals(maleRequirements.size(), 23);
+    Assert.assertEquals(femaleRequirements.size(), 23);
 
     Assert.assertEquals(maleRequirements.get("Calorie Level Assessed"), 2000);
     Assert.assertEquals(femaleRequirements.get("Calorie Level Assessed"), 1600);

@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
-import { mockedRecommendationData } from "../src/pages/software-components/MockedResults";
+import {
+  mockedRecommendationData,
+  mockedErrorMessage,
+} from "../src/pages/software-components/MockedResults";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:8000/");
-});
-
-test("intercepts the pureplate request", async ({ page }) => {
+  await page.goto("http://localhost:8000/software");
   await page.route("http://localhost:3233/pureplate*", (route) => {
     // Check if the request includes specific query params
     const query = route.request().url().split("?")[1];
@@ -21,176 +21,205 @@ test("intercepts the pureplate request", async ({ page }) => {
       route.continue();
     }
   });
-
-  // Navigate to your application or perform actions that trigger the request
-  await page.goto("http://localhost:8000/software");
-
-  // Add your assertions here
-  await expect(page.getByRole('heading', { name: 'Weight (kg)' })).toBeVisible
-
 });
 
-test("checking mode starts in brief and can switch between brief and verbose", async ({
+test("Testing the basic elements of the software page", async ({ page }) => {
+  await expect(page.getByRole('heading', { name: 'Weight (kg)' })).toBeVisible
+  await expect(page.getByRole("heading", { name: "Height (cm)" })).toBeVisible;
+  await expect(page.getByRole("heading", { name: "Age" })).toBeVisible;
+  await expect(page.getByRole("heading", { name: "Gender" })).toBeVisible;
+  await expect(page.getByRole("heading", { name: "Activity Level" })).toBeVisible;
+  await expect(page.getByRole("heading", { name: "Only Search Growable Foods?" })).toBeVisible;
+  await expect(page.getByText("Select Foods")).toBeVisible;
+});
+
+test("Checking if software page works with basic input (100 for demographic information)", async ({
   page,
 }) => {
-  // make sure the history box exists
-  await expect(page.getByTitle("repl-history")).toBeVisible;
-  await page.getByLabel("Command input").click();
-  //input just hello to get unknown input response
-  await page.getByLabel("Command input").fill("hello");
-  await page.getByRole("button", { name: "Submitted 0 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: Unknown input, please try again.");
-  //input a long string of nonsense to get the too long response
+
+  // Filling out weight 
+  await expect(page.getByRole("heading", { name: "Weight (kg)" })).toBeVisible;
+  await page.locator("#txtbx3").click();
+  await page.locator("#txtbx3").fill("100");
+
+  // Filling out height
+  await expect(page.getByRole("heading", { name: "Height (cm)" })).toBeVisible;
+  await page.locator("#txtbx2").click();
+  await page.locator("#txtbx2").fill("100");
+
+  await expect(page.getByRole("heading", { name: "Age" })).toBeVisible;
+  await page.locator("#txtbx1").click();
+  await page.locator("#txtbx1").fill("100");
+
+  await page.getByLabel("Male").check();
+  await page.getByLabel("Lightly Active").check();
+  await page.getByLabel("No").check();
+  
+  await page.locator("#foods-autocomplete").click();
+  await page.getByRole("option", { name: "Carrots, mature, raw" }).click();
   await page
-    .getByLabel("Command input")
-    .fill("hello aljshdljashd aljshdlaksjhd asd asd");
-  await page.getByRole("button", { name: "Submitted 1 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: Command too long!");
-  // switch mode to verbose
-  await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 2 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Command: mode, Output: Mode switched to verbose");
-  // switch mode back to brief
-  await page.getByLabel("Command input").fill("mode");
-  await page.getByRole("button", { name: "Submitted 3 times" }).click();
-  await expect(
-    page.getByTitle("repl-history").getByTitle("history-line").last()
-  ).toHaveText("Output: Mode switched to brief");
+    .getByRole("option", { name: "Restaurant, Latino, pupusas" })
+    .click();
+  await page.getByLabel("Submit Button").click();
+  await page.getByRole("cell", { name: "Salt, table, iodized" }).click();
+  await page.getByRole("cell", { name: "Flour, soy, defatted" }).click();
 });
 
-// test("test load", async ({ page }) => {
-//   // testing for file that is not in the dataset
-//   await page.getByLabel("Command input").fill("load_file lajhdasjh");
-//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
-//   await expect(
-//     page.getByTitle("repl-history").getByTitle("history-line").last()
-//   ).toHaveText("Output: File not found!");
-//   // testing for file that is in the dataset
-//   await page.getByLabel("Command input").fill("load_file filepath/jobs");
-//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
-//   await expect(
-//     page.getByTitle("repl-history").getByTitle("history-line").last()
-//   ).toHaveText("Output: File: 'filepath/jobs' loaded");
-// });
+test("checking that an alert happens when we dont have the correct number of imputs", async ({
+  page,
+}) => {
 
-// test("test view", async ({ page }) => {
-//   // testing if view is called before load is
-//   // brief
-//   await page.getByLabel("Command input").fill("view");
-//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
-//   await expect(
-//     page.getByTitle("repl-history").getByTitle("history-line").last()
-//   ).toHaveText("Output: Please load a file first!");
-//   // verbose
-//   await page.getByLabel("Command input").fill("mode");
-//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
-//   await page.getByLabel("Command input").fill("view");
-//   await page.getByRole("button", { name: "Submitted 2 times" }).click();
-//   await expect(
-//     page.getByTitle("repl-history").getByTitle("history-line").last()
-//   ).toHaveText("Command: view, Output: Please load a file first!");
-//   await page.getByLabel("Command input").fill("mode");
-//   await page.getByRole("button", { name: "Submitted 3 times" }).click();
-//   // testing view table by seeing if an element is displayed on screen
-//   await page.getByLabel("Command input").fill("load_file filepath/jobs");
-//   await page.getByRole("button", { name: "Submitted 4 times" }).click();
-//   await page.getByLabel("Command input").fill("view");
-//   await page.getByRole("button", { name: "Submitted 5 times" }).click();
-//   await expect(
-//     page
-//       .getByTitle("viewing-table")
-//       .getByTitle("view-table")
-//       .getByTitle("row")
-//       .getByTitle("cell")
-//       .first()
-//   ).toHaveText("Name");
-//   // checking if I load a new file and view it the new information is updated
-//   await page.getByLabel("Command input").fill("load_file filepath/income");
-//   await page.getByRole("button", { name: "Submitted 6 times" }).click();
-//   await page.getByLabel("Command input").fill("view");
-//   await page.getByRole("button", { name: "Submitted 7 times" }).click();
-//   await expect(
-//     page
-//       .getByTitle("viewing-table")
-//       .getByTitle("view-table")
-//       .getByTitle("row")
-//       .getByTitle("cell")
-//       .first()
-//   ).toHaveText("Income");
-// });
+  // Filling out weight 
+  await expect(page.getByRole("heading", { name: "Weight (kg)" })).toBeVisible;
+  await page.locator("#txtbx3").click();
+  await page.locator("#txtbx3").fill("h");
 
-// test("test search", async ({ page }) => {
-//   // testing if search is called before load is
-//   // brief
-//   await page.getByLabel("Command input").fill("search asdas dasds");
-//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
-//   await expect(
-//     page.getByTitle("repl-history").getByTitle("history-line").last()
-//   ).toHaveText("Output: Please load a file first!");
-//   // verbose
-//   await page.getByLabel("Command input").fill("mode");
-//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
-//   await page.getByLabel("Command input").fill("search asdas dasds");
-//   await page.getByRole("button", { name: "Submitted 2 times" }).click();
-//   await expect(
-//     page.getByTitle("repl-history").getByTitle("history-line").last()
-//   ).toHaveText(
-//     "Command: search asdas dasds, Output: Please load a file first!"
-//   );
-//   await page.getByLabel("Command input").fill("mode");
-//   await page.getByRole("button", { name: "Submitted 3 times" }).click();
-//   // testing search table by seeing if an element is displayed on screen
-//   await page.getByLabel("Command input").fill("load_file filepath/jobs");
-//   await page.getByRole("button", { name: "Submitted 4 times" }).click();
-//   // with header
-//   await page.getByLabel("Command input").fill("search Name Avocado");
-//   await page.getByRole("button", { name: "Submitted 5 times" }).click();
-//   await expect(
-//     page
-//       .getByTitle("viewing-table")
-//       .getByTitle("view-table")
-//       .getByTitle("row")
-//       .getByTitle("cell")
-//       .first()
-//   ).toHaveText("Avocado");
-//   // without headers
-//   await page.getByLabel("Command input").fill("search 0 Avocado");
-//   await page.getByRole("button", { name: "Submitted 6 times" }).click();
-//   await expect(
-//     page
-//       .getByTitle("viewing-table")
-//       .getByTitle("view-table")
-//       .getByTitle("row")
-//       .getByTitle("cell")
-//       .first()
-//   ).toHaveText("Avocado");
-// });
+  page.on("dialog", async (dialog) => {
+    // Assert the message in the alert dialog
+    expect(dialog.message()).toBe("Value Entered is not a valid number");
 
-// test("test misc.", async ({ page }) => {
-//   // testing if user clicks button with nothing in input box
-//   await page.getByRole("button", { name: "Submitted 0 times" }).click();
-//   await expect(
-//     page.getByTitle("repl-history").getByTitle("history-line").last()
-//   ).toHaveText("Output: Unknown input, please try again.");
-//   // testing search empty table by seeing if no element is displayed on screen
-//   await page.getByLabel("Command input").fill("load_file filepath/empty");
-//   await page.getByRole("button", { name: "Submitted 1 times" }).click();
-//   // with header
-//   await page.getByLabel("Command input").fill("search Name Liam");
-//   await page.getByRole("button", { name: "Submitted 2 times" }).click();
-//   await expect(
-//     page.getByTitle("viewing-table").getByTitle("view-table").getByTitle("row")
-//   ).toHaveText("");
-//   // without headers
-//   await page.getByLabel("Command input").fill("search 0 Liam");
-//   await page.getByRole("button", { name: "Submitted 3 times" }).click();
-//   await expect(
-//     page.getByTitle("viewing-table").getByTitle("view-table").getByTitle("row")
-//   ).toHaveText("");
-// });
+    // You can dismiss the dialog if necessary
+    await dialog.dismiss();
+  });
+  // Filling out height
+  await expect(page.getByRole("heading", { name: "Height (cm)" })).toBeVisible;
+  await page.locator("#txtbx2").click();
+  await page.locator("#txtbx2").fill("100");
+
+  await expect(page.getByRole("heading", { name: "Age" })).toBeVisible;
+  await page.locator("#txtbx1").click();
+  await page.locator("#txtbx1").fill("100");
+
+  await page.getByLabel("Male").check();
+  await page.getByLabel("Lightly Active").check();
+  await page.getByLabel("No").check();
+  
+  await page.locator("#foods-autocomplete").click();
+  await page.getByRole("option", { name: "Carrots, mature, raw" }).click();
+  await page
+    .getByRole("option", { name: "Restaurant, Latino, pupusas" })
+    .click();
+  await page.getByLabel("Submit Button").click();
+});
+
+
+
+test("Checking if the the value of Age is iputted incorrectly ", async ({
+  page,
+}) => {
+
+  // Filling out weight 
+  await expect(page.getByRole("heading", { name: "Weight (kg)" })).toBeVisible;
+  await page.locator("#txtbx3").click();
+  await page.locator("#txtbx3").fill("100");
+  // Filling out height
+  await expect(page.getByRole("heading", { name: "Height (cm)" })).toBeVisible;
+  await page.locator("#txtbx2").click();
+  await page.locator("#txtbx2").fill("100");
+  //Filling out Age
+  await expect(page.getByRole("heading", { name: "Age" })).toBeVisible;
+  await page.locator("#txtbx1").click();
+  await page.locator("#txtbx1").fill("yeet");
+
+  page.on("dialog", async (dialog) => {
+    // Assert the message in the alert dialog
+    expect(dialog.message()).toBe("Value Entered is not a valid number");
+
+    // You can dismiss the dialog if necessary
+    await dialog.dismiss();
+  });
+
+  await page.getByLabel("Male").check();
+  await page.getByLabel("Lightly Active").check();
+  await page.getByLabel("No").check();
+  
+  await page.locator("#foods-autocomplete").click();
+  await page.getByRole("option", { name: "Carrots, mature, raw" }).click();
+  await page
+    .getByRole("option", { name: "Restaurant, Latino, pupusas" })
+    .click();
+  await page.getByLabel("Submit Button").click();
+});
+
+
+test("when a checkbox is no selected and submitted the form", async ({
+  page,
+}) => {
+
+  // Filling out weight 
+  await expect(page.getByRole("heading", { name: "Weight (kg)" })).toBeVisible;
+  await page.locator("#txtbx3").click();
+  await page.locator("#txtbx3").fill("100");
+  // Filling out height
+  await expect(page.getByRole("heading", { name: "Height (cm)" })).toBeVisible;
+  await page.locator("#txtbx2").click();
+  await page.locator("#txtbx2").fill("100");
+  //Filling out Age
+  await expect(page.getByRole("heading", { name: "Age" })).toBeVisible;
+  await page.locator("#txtbx1").click();
+  await page.locator("#txtbx1").fill("yeet");
+
+  page.on("dialog", async (dialog) => {
+    // Assert the message in the alert dialog
+    expect(dialog.message()).toBe("Value Entered is not a valid number");
+
+    // You can dismiss the dialog if necessary
+    await dialog.dismiss();
+  });
+
+  await page.getByLabel("Male").check();
+  await page.getByLabel("No").check();
+  const initialTextContent = await page.locator('.scroll-box').textContent();
+  await page.locator("#foods-autocomplete").click();
+  await page.getByRole("option", { name: "Carrots, mature, raw" }).click();
+  await page
+    .getByRole("option", { name: "Restaurant, Latino, pupusas" })
+    .click();
+  await page.getByLabel("Submit Button").click();
+  const finalTextContent = await page.locator(".scroll-box").textContent();
+  expect(initialTextContent).toBe(finalTextContent);
+});
+
+
+test("Testing output if no food is selected", async ({
+  page,
+}) => {
+  // Route to mocked error message
+  await page.route("http://localhost:3233/pureplate*", (route) => {
+    // Check if the request includes specific query params
+    const query = route.request().url().split("?")[1];
+    if (query.includes("weight=100") && query.includes("height=100")) {
+      // Provide a mock response
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(mockedErrorMessage),
+      });
+    } else {
+      // Optionally, let other requests pass through
+      route.continue();
+    }
+  });
+  // Filling out weight
+  await expect(page.getByRole("heading", { name: "Weight (kg)" })).toBeVisible;
+  await page.locator("#txtbx3").click();
+  await page.locator("#txtbx3").fill("100");
+
+  // Filling out height
+  await expect(page.getByRole("heading", { name: "Height (cm)" })).toBeVisible;
+  await page.locator("#txtbx2").click();
+  await page.locator("#txtbx2").fill("100");
+
+  // Filling out age
+  await expect(page.getByRole("heading", { name: "Age" })).toBeVisible;
+  await page.locator("#txtbx1").click();
+  await page.locator("#txtbx1").fill("100");
+
+  await page.getByLabel("Male").check();
+  await page.getByLabel("Sedentary").check();
+  await page.getByLabel("No").check();
+
+  
+  await page.getByLabel("Submit Button").click();
+  await page.getByText('empty request parameter').click()
+});

@@ -7,3 +7,8 @@ export const mockedRecommendationData = {
                        "Sesame butter, creamy",
                       ]
 }
+
+export const mockedErrorMessage = {
+  result: "error_bad_request",
+  message: "empty request parameter",
+};

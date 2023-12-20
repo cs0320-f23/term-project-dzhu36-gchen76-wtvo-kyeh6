@@ -6,11 +6,22 @@ interface SearchHistoryProps {
 }
 
 class SearchHistory extends React.Component<SearchHistoryProps> {
+  historyRef: React.RefObject<HTMLDivElement>;
+  constructor(props: SearchHistoryProps) {
+    super(props);
+    this.historyRef = React.createRef();
+  }
+  componentDidUpdate() {
+    const element = this.historyRef.current;
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+  }
   render() {
     return (
       <div className="searchHistory">
         Search History
-        <div className="scroll-box">
+        <div className="scroll-box" ref={this.historyRef}>
           <p>{getResult(this.props.historyData)}</p>
         </div>
       </div>
