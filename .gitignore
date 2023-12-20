@@ -10,3 +10,4 @@
 **/.mvn-classpath
 **/pom.xml.bak
 **/key
+**/tests-examples

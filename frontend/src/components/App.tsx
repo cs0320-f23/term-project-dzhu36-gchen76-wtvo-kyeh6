@@ -7,7 +7,7 @@ import Profile from "../HomePage/profile";
 
 import granImage from "../public/gardening.png";
 import pot from "../public/6360237.jpg";
-
+//This is the high level file that contains all of the content for the first page.
 class App extends React.Component {
   render() {
     return (

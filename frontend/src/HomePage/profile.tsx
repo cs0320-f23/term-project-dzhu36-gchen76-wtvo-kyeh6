@@ -1,5 +1,4 @@
-//will have profile image, and profile text
-//will have search bar, home button, login butotn, and contact button
+
 
 import React from "react";
 import wilsonPhoto from "../public/IMG_1095.jpg";

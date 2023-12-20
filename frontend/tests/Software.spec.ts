@@ -24,7 +24,7 @@ test("basic cases where we can see a table given basic inputs", async ({ page })
   await page.locator('#txtbx3').fill('55');
   await page.locator('#txtbx2').fill('44');
   await page.locator('#txtbx1').fill('33');
-  await page.locator('div').filter({ hasText: /^GenderMaleFemale$/ }).getByRole('radio').nth(1).check();
+  await page.getByLabel("Female").check();
   await page.getByLabel('Very Active').check();
   await page.locator('.growable-container > #rb1').check();
   await page.locator('#foods-autocomplete').click();
@@ -114,17 +114,6 @@ page.on("dialog", async (dialog) => {
   await dialog.dismiss();
 });
 });
-
-// //reccomendations could not be received for 0 values 
-// await page.getByLabel('Female').check();
-// await page.getByLabel('Very Active').check();
-// await page.locator('.growable-container > #rb1').check();
-// await page.locator('#foods-autocomplete').click();
-// await page.getByRole('option', { name: 'Restaurant, Chinese, fried rice, without meat' }).click();
-// await page.getByRole('option', { name: 'Beans, Dry, Carioca (0 percent moisture)' }).click();
-// await page.getByLabel('Submit Button').click();
-// await expect(page.locator('.scroll-box')).toBeVisible();
-// });
 
 test("negative/0 for age, weight, and height inputs", async ({ page }) => {
  //negative age -> expect a error popup 
