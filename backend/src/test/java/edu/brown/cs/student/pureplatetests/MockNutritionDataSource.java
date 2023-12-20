@@ -32,7 +32,8 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
   private Map<String, Double> nutritionNeeds;
   private Map<String, Map<String, Double>> foodData;
   private List<String> visited;
-  private List<String> growable = parseGrowable();
+  private final List<String> growable = parseGrowable();
+  private boolean onlyGrowable = false;
 
   public MockNutritionDataSource(String filename) {
     try {
@@ -62,18 +63,49 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
     String age = target.get(2);
     String gender = target.get(3);
     String activity = target.get(4);
-    String foodsString = target.get(5);
+    String growable = target.get(5);
+    String foodsString = target.get(6);
 
     this.visited = new ArrayList<>();
     List<String> foodsList = Arrays.asList(foodsString.split("`"));
     this.visited.addAll(foodsList);
+    if (growable.equalsIgnoreCase("yes")) {
+      this.onlyGrowable = true;
+    } else if (growable.equalsIgnoreCase("no")) {
+      this.onlyGrowable = false;
+    } else {
+      throw new DatasourceException("Unreasonable growable parameter");
+    }
+
     try {
-      this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(weight), Integer.parseInt(height), Integer.parseInt(age), gender, activity), gender);
+//      if (weight.length() > 4) {
+//        weight = weight.substring(0,5);
+//      }
+//      if (height.length() > 4) {
+//        height = height.substring(0, 5);
+//      }
+//      if (age.length() > 4) {
+//        age = age.substring(0, 5);
+//      }
+      Double weight_num = Double.parseDouble(weight);
+      Double height_num = Double.parseDouble(height);
+      Double age_num = Double.parseDouble(age);
+
+      this.calculateRatios(this.calculateCaloricRequirement(weight_num, height_num.intValue(),
+          age_num.intValue(), gender, activity), gender);
     } catch (NumberFormatException e) {
+      System.out.println("error message");
+      System.out.println(e.getMessage());
+      System.out.println(e.getClass());
       throw new DatasourceException("Unreasonable weight, height, or age parameter");
     }
     //System.out.println("still in query, passed ratios");
-    this.calculateDeficiency(this.visited);
+    try {
+      this.calculateDeficiency(this.visited);
+    } catch (NullPointerException e) {
+      throw new DatasourceException("Unrecognized food");
+    }
+
     //System.out.println("still in query, passed calc defs");
     return this.getRecommendations();
   }
@@ -93,6 +125,11 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
     this.foodData.get("Pork, loin, boneless, raw").put("Water", 68.8);
     this.foodData.get("Pork, loin, boneless, raw").put("Fatty acids, total saturated", 3.28);
     this.foodData.get("Pork, loin, boneless, raw").put("Potassium, K", 361.0);
+
+    this.foodData.put("Blackeye pea, dry", new HashMap<>());
+    this.foodData.get("Blackeye pea, dry").put("Water", 68.8);
+    this.foodData.get("Blackeye pea, dry").put("Fatty acids, total saturated", 3.28);
+    this.foodData.get("Blackeye pea, dry").put("Potassium, K", 361.0);
   }
 
   private Map<String, Double> getScore() {
@@ -115,7 +152,15 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
           counter++;
         }
       }
-      scoreMap.put(foodKey,  counter > 0 ? (this.visited.contains(foodKey) ? 99.0 : score/counter) : 0.0 ); // if the food doesn't have the nutrient
+      if (this.onlyGrowable) {
+        scoreMap.put(foodKey, counter > 0 ? ((this.visited.contains(foodKey) ? -(counter / score) :
+            (!this.growable.contains(foodKey) ? -(counter / score) : score / counter ))) : 1000.0); // if the food doesn't have the nutrient
+        System.out.println(scoreMap);
+      } else {
+        scoreMap.put(foodKey, counter > 0 ? (this.visited.contains(foodKey) ? -(counter / score) : score / counter) : 1000.0);
+        System.out.println(scoreMap);
+      }
+      // scoreMap.put(foodKey,  counter > 0 ? (this.visited.contains(foodKey) ? 99.0 : score/counter) : 0.0 ); // if the food doesn't have the nutrient
     }
     return scoreMap;
   }
@@ -237,11 +282,14 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
   }
 
   public void calculateDeficiency(List<String> foods){
+    System.out.println("fooddata");
+    System.out.println(this.foodData);
     //System.out.println("in calc defs");
     Set<String> foodSet = new HashSet<>(foods);
 //    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
     for (String food : foodSet) {
-      //System.out.println("In outer for loop " + food);
+      System.out.println("In outer for loop " + food);
+      System.out.println(this.foodData.get(food).keySet());
 //      for (String key : this.foodData.get(food).keySet()) {
       for (String key : this.nutritionNeeds.keySet()) {
         //System.out.println(this.nutritionNeeds);

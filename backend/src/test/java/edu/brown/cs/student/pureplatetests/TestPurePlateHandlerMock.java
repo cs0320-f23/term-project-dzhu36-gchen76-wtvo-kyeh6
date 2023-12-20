@@ -2,6 +2,10 @@ package edu.brown.cs.student.pureplatetests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.testng.Assert.assertFalse;
+import java.util.List;
+import static org.testng.Assert.assertListNotContains;
+import static org.testng.Assert.assertListNotContainsObject;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -13,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okio.Buffer;
@@ -83,9 +88,20 @@ public class TestPurePlateHandlerMock {
   public void testPurePlateBasic() throws IOException {
     // Multiple foods
     HttpURLConnection loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseMap =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    System.out.println(responseMap);
+    assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
+    assertEquals("success", responseMap.get("result"));
+    assertNotEquals("[]", responseMap.get("recommendations"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=20&height=20&age=5&gender=female&activity=extra%20active&growable=Yes&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
     assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
@@ -93,17 +109,18 @@ public class TestPurePlateHandlerMock {
     assertNotEquals("[]", responseMap.get("recommendations"));
 
     // One food
-    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw");
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
     assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
     assertEquals("success", responseMap.get("result"));
     assertNotEquals("[]", responseMap.get("recommendations"));
+    System.out.println(responseMap);
     Object oneCarrotRecs = responseMap.get("recommendations");
 
     // Multiple of the same food (should treat as one food)
-    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Carrots,%20baby,%20raw");
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Carrots,%20baby,%20raw");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -112,14 +129,52 @@ public class TestPurePlateHandlerMock {
     assertNotEquals("[]", responseMap.get("recommendations"));
     assertEquals(oneCarrotRecs, responseMap.get("recommendations"));
 
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=yes&foods=Carrots,%20baby,%20raw`Carrots,%20baby,%20raw");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
+    assertEquals("success", responseMap.get("result"));
+    assertNotEquals("[]", responseMap.get("recommendations"));
+    assertNotEquals(oneCarrotRecs, responseMap.get("recommendations"));
+
     loadConnection.disconnect();
+  }
+
+  @Test
+  public void testVaryNumericalParams() throws IOException {
+    Double weight = ThreadLocalRandom.current().nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+    // height and age are technically both ints, but we will use doubles to check for errors
+    Double height = ThreadLocalRandom.current().nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+    Double age = ThreadLocalRandom.current().nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+    System.out.println(weight);
+    System.out.println(height);
+    System.out.println(age);
+
+    for(int i = 0; i < 10000; i++) {
+      HttpURLConnection loadConnection =
+          tryRequest("pureplate?weight=" + weight + "&height=" + height + "&age=" + age + "&gender=male&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+      assertEquals(200, loadConnection.getResponseCode());
+      Map<String, Object> responseMap =
+          this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+      assertEquals(2, responseMap.size());
+      System.out.println(responseMap);
+      if (weight <= 0 || height <= 0 || age <= 0) {
+        assertEquals(Set.of("result", "message"), responseMap.keySet());
+        assertEquals("error_bad_request", responseMap.get("result"));
+      } else {
+        assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
+        assertEquals("success", responseMap.get("result"));
+        assertNotEquals("[]", responseMap.get("recommendations"));
+      }
+    }
   }
 
   @Test
   public void testPurePlateBadRequest() throws IOException {
     // Missing parameters (weight, height, age, gender, activity, foods)
     HttpURLConnection loadConnection =
-        tryRequest("pureplate?height=10&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?height=10&age=10&gender=female&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseMap =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
@@ -129,7 +184,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("missing request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&age=10&gender=male&activity=very%20active&growable=yes&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -138,7 +193,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("missing request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&gender=female&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -147,7 +202,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("missing request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=10&activity=very%20active&growable=Yes&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -156,7 +211,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("missing request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=female&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=female&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -165,7 +220,16 @@ public class TestPurePlateHandlerMock {
     assertEquals("missing request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=sedentary");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=sedentarygrowable=No");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("missing request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=sedentarygrowable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -175,7 +239,7 @@ public class TestPurePlateHandlerMock {
 
     // Unrecognized parameter
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma&random=random");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma&random=random");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -185,7 +249,7 @@ public class TestPurePlateHandlerMock {
 
     // Unrecognized parameter values (e.g., negative age)
     loadConnection =
-        tryRequest("pureplate?weight=0&height=0&age=0&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=0&height=0&age=0&gender=female&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -194,7 +258,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("unrecognized parameter input", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=-10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=-10&height=10&age=10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -203,7 +267,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("unrecognized parameter input", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=-10&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=-10&age=10&gender=female&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -212,7 +276,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("unrecognized parameter input", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=-10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=-10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -221,7 +285,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("unrecognized parameter input", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=unrecognized&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=unrecognized&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -231,7 +295,7 @@ public class TestPurePlateHandlerMock {
 
     // Empty request parameters
     loadConnection =
-        tryRequest("pureplate?weight=&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=&height=10&age=10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -240,7 +304,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("empty request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=&age=10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -249,7 +313,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("empty request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -258,7 +322,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("empty request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -267,7 +331,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("empty request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -276,7 +340,16 @@ public class TestPurePlateHandlerMock {
     assertEquals("empty request parameter", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("empty request parameter", responseMap.get("message"));
+
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=No&foods=");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -286,7 +359,7 @@ public class TestPurePlateHandlerMock {
 
     // Non-numerical value for weight, height, and age
     loadConnection =
-        tryRequest("pureplate?weight=a&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=a&height=10&age=10&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -295,7 +368,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("unrecognized parameter input", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=a&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=a&age=10&gender=female&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -304,7 +377,7 @@ public class TestPurePlateHandlerMock {
     assertEquals("unrecognized parameter input", responseMap.get("message"));
 
     loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=a&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=a&gender=male&activity=very%20active&growable=No&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
@@ -312,27 +385,53 @@ public class TestPurePlateHandlerMock {
     assertEquals("error_bad_request", responseMap.get("result"));
     assertEquals("unrecognized parameter input", responseMap.get("message"));
 
-    loadConnection.disconnect();
-  }
+    // Random value for Growable
+    loadConnection =
+        tryRequest("pureplate?weight=10&height=10&age=a&gender=male&activity=very%20active&growable=random&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+    assertEquals(200, loadConnection.getResponseCode());
+    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    assertEquals(2, responseMap.size());
+    assertEquals(Set.of("result", "message"), responseMap.keySet());
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
 
-  @Test
-  public void testPurePlateBadDatasource() throws IOException {
     // Unrecognized foods
-    HttpURLConnection loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&foods=Carrots,%20baby,%20raw`unrecognized");
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&growable=yes&foods=Carrots,%20baby,%20raw`unrecognized");
     assertEquals(200, loadConnection.getResponseCode());
-    Map<String, Object> responseMap =
+    responseMap =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
-    assertEquals("error_bad_datasource", responseMap.get("result"));
-    assertEquals("recommendations could not be retrieved", responseMap.get("message"));
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
 
-    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&foods=unrecognized");
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&growable=Yes&foods=unrecognized");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
-    assertEquals("error_bad_datasource", responseMap.get("result"));
-    assertEquals("recommendations could not be retrieved", responseMap.get("message"));
+    assertEquals("error_bad_request", responseMap.get("result"));
+    assertEquals("unrecognized parameter input", responseMap.get("message"));
 
     loadConnection.disconnect();
   }
+
+//  @Test
+//  public void testPurePlateBadDatasource() throws IOException {
+//    // Unrecognized foods
+//    HttpURLConnection loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&growable=yes&foods=Carrots,%20baby,%20raw`unrecognized");
+//    assertEquals(200, loadConnection.getResponseCode());
+//    Map<String, Object> responseMap =
+//        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+//    assertEquals(2, responseMap.size());
+//    assertEquals("error_bad_datasource", responseMap.get("result"));
+//    assertEquals("recommendations could not be retrieved", responseMap.get("message"));
+//
+//    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=female&activity=very%20active&growable=Yes&foods=unrecognized");
+//    assertEquals(200, loadConnection.getResponseCode());
+//    responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+//    assertEquals(2, responseMap.size());
+//    assertEquals("error_bad_datasource", responseMap.get("result"));
+//    assertEquals("recommendations could not be retrieved", responseMap.get("message"));
+//
+//    loadConnection.disconnect();
+//  }
 }

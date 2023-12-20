@@ -50,73 +50,6 @@ public class TestNutritionDataSource {
     Assert.assertThrows(NullPointerException.class, () -> foodData.get("carrot").get("Iron, Fe"));
   }
 
-//  @Test
-//  public void testQuery() throws DatasourceException {
-//  }
-
-
-//  /**
-//   * Tests the functionality of the getNutritionData method.
-//   * @throws DatasourceException if nutrition data cannot be retrieved.
-//   */
-//  @Test
-//  public void testGetNutritionData() throws DatasourceException {
-//    NutritionDataSource dataSource = new NutritionDataSource();
-//
-//    // Empty list of foods
-//    Assert.assertThrows(DatasourceException.class, () -> dataSource.getNutritionData(List.of()));
-//
-//    // Basic case
-//    Map<String, List<FoodNutrient>> nutritionData = dataSource.getNutritionData(List.of("eggs"));
-//    Assert.assertTrue(nutritionData.containsKey("Eggs, Grade A, Large, egg white"));
-//    List<FoodNutrient> nutrients = nutritionData.get("Eggs, Grade A, Large, egg white");
-//    Assert.assertEquals(nutrients.size(), 29);
-//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1166);
-//
-//    // Food with spaces
-//    nutritionData = dataSource.getNutritionData(List.of("pork loin"));
-//    Assert.assertTrue(nutritionData.containsKey("Pork, loin, boneless, raw"));
-//    nutrients = nutritionData.get("Pork, loin, boneless, raw");
-//    Assert.assertEquals(nutrients.size(), 22);
-//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-//
-//    // Multiple entries in list
-//    nutritionData = dataSource.getNutritionData(List.of("scrambled eggs", "steak", "apple"));
-//    Assert.assertTrue(nutritionData.containsKey("Eggs, Grade A, Large, egg white"));
-//    nutrients = nutritionData.get("Eggs, Grade A, Large, egg white");
-//    Assert.assertEquals(nutrients.size(), 29);
-//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1166);
-//
-//    Assert.assertTrue(nutritionData.containsKey("Beef, flank, steak, boneless, choice, raw"));
-//    nutrients = nutritionData.get("Beef, flank, steak, boneless, choice, raw");
-//    Assert.assertEquals(nutrients.size(), 22);
-//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-//
-//    Assert.assertTrue(nutritionData.containsKey("Apples, fuji, with skin, raw"));
-//    nutrients = nutritionData.get("Apples, fuji, with skin, raw");
-//    Assert.assertEquals(nutrients.size(), 31);
-//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-//
-//    // Duplicate items in list
-//    nutritionData = dataSource.getNutritionData(List.of("pork loin", "pork loin"));
-//    Assert.assertTrue(nutritionData.containsKey("Pork, loin, boneless, raw"));
-//    Assert.assertEquals(nutritionData.keySet().size(), 1); // should not result in duplicate map entries
-//    nutrients = nutritionData.get("Pork, loin, boneless, raw");
-//    Assert.assertEquals(nutrients.size(), 22);
-//    Assert.assertEquals(nutrients.get(0).nutrientId(), 1089);
-//
-//    // Food not in database
-//    nutritionData = dataSource.getNutritionData(List.of("salmon"));
-//    Assert.assertTrue(nutritionData.containsKey("salmon"));
-//    nutrients = nutritionData.get("salmon");
-//    Assert.assertTrue(nutrients.isEmpty());
-//
-//    nutritionData = dataSource.getNutritionData(List.of("asdfghjkl"));
-//    Assert.assertTrue(nutritionData.containsKey("asdfghjkl"));
-//    nutrients = nutritionData.get("asdfghjkl");
-//    Assert.assertTrue(nutrients.isEmpty());
-//  }
-
   /**
    * Tests the functionality of the calculateCaloricRequirement method.
    */
@@ -181,5 +114,31 @@ public class TestNutritionDataSource {
 
     caloricRequirement = dataSource.calculateCaloricRequirement(50, 160, 30, "female", "asdfghjkl");
     Assert.assertEquals(caloricRequirement, 10 * 50 + 6.25 * 160 - 5 * 30 - 161);
+  }
+
+  @Test
+  public void testQuery() throws DatasourceException {
+    NutritionDataSource dataSource = new NutritionDataSource("data/nutrition/daily_requirements.csv");
+
+    // basic cases
+    List<String> queryInput = List.of("10","10","10","male","very%20active","No","Carrots, baby, raw`Tomato, roma");
+    List<String> queryResult = dataSource.query(queryInput);
+    Assert.assertFalse(queryResult.isEmpty());
+
+    queryInput = List.of("10","10","10","male","very%20active","yes","Tomato, roma");
+    queryResult = dataSource.query(queryInput);
+    Assert.assertFalse(queryResult.isEmpty());
+
+    queryInput = List.of("40","40","15","female","extra%20active","yes","Tomato, roma");
+    queryResult = dataSource.query(queryInput);
+    Assert.assertFalse(queryResult.isEmpty());
+
+    // Other than yes/no growable parameter
+    Assert.assertThrows(DatasourceException.class, () -> dataSource.query(List.of("10","10","10","female","very%20active","other","Tomato, roma")));
+
+    //test non-numeric height, age, weight
+    Assert.assertThrows(DatasourceException.class, () -> dataSource.query(List.of("a","10","10","female","sedentary","no","Tomato, roma")));
+    Assert.assertThrows(DatasourceException.class, () -> dataSource.query(List.of("10","a","10","female","sedentary","no","Tomato, roma")));
+    Assert.assertThrows(DatasourceException.class, () -> dataSource.query(List.of("10","10","a","female","sedentary","no","Tomato, roma")));
   }
 }
