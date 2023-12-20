@@ -24,7 +24,7 @@ test("basic cases where we can see a table given basic inputs", async ({ page })
   await page.locator('#txtbx3').fill('55');
   await page.locator('#txtbx2').fill('44');
   await page.locator('#txtbx1').fill('33');
-  await page.getByLabel("Female").check();
+  await page.locator('div').filter({ hasText: /^GenderMaleFemale$/ }).getByRole('radio').nth(1).check();
   await page.getByLabel('Very Active').check();
   await page.locator('.growable-container > #rb1').check();
   await page.locator('#foods-autocomplete').click();
@@ -33,6 +33,7 @@ test("basic cases where we can see a table given basic inputs", async ({ page })
   await page.getByLabel('Submit Button').click();
   await expect(page.getByRole('paragraph').locator('div').filter({ hasText: 'Seeds, pumpkin seeds (pepitas), rawFlour, soy, defattedCheese, parmesan, gratedC' })).toBeVisible();
 
+  // await expect(page.getByRole("cell", { name: "Carrots, mature, raw" })).toBeVisible;
   // nutrients already fulfilled
   await page.goto("http://localhost:8000/software");
   await page.locator('#txtbx3').fill('10');

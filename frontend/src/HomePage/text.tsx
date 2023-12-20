@@ -18,7 +18,8 @@ const TextBox = () => {
           ensuring they maintain active throughout their senior years. Our state
           of the art application aims to recommend easy to grow vegetables to
           help nourish the aging population through a complex mathematical
-          algorithm taking into account multiple factors.
+          algorithm taking into account multiple factors. We reference the Mifflin St Jeor
+          equation in our software.
           <br />
           Click the Software button to begin using the software.
         </h4>

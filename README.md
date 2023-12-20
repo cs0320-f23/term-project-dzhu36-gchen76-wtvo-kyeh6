@@ -15,19 +15,23 @@ In our frontend we decided to have a few different design choices these inclcude
 ### Errors and Bugs
 There are no current errors or bugs as of December 20th, 2023.  
 ## Backend
-On our backend api server, we have two main endpoints (food data and pure plate). THe food data handler is used
-by our frontend to retrieve a list of valid foods to select from. The pureplate handler is what actually calculates the recommended list of foods. 
-
-We use the proxy and strategy pattern and delegate our USDA food API calling through the Nutrition Data Source. Our NutritionDataSource class 
 ### Design Choices
-* hello
-
+* On our backend api server, we have two main endpoints (food data and pure plate). 
+* The food data handler is used
+by our frontend to retrieve a list of valid foods to select from. The pureplate handler is what actually calculates the recommended list of foods. 
+* We use the proxy and strategy pattern and delegate our USDA food API calling through the Nutrition Data Source. 
 ### Errors and Bugs
 There are no current errors or bugs as of December 20th, 2023.  
-
 ## Testing
 Here are the following tests which we have decided to include in our program:
-* hello
+* Testing if all the components are visible when the application loads
+* Testing when certain values are inputted/selected we get the following results. 
+* Testing when values are invalid, such as negative or non-integer/non-double values
+* Testing that informative errors (window alerts) pop up.
+* Using mocks to test invalid 
+* Testing if the caloric requirement if that matches up with the Mifflin St Jeor equation.
+* Testing parsing the food base
+* Many more tests which cannot be outlined all on this README.
 
 ## How to run the program
 In order to run the program copy the GitHub Repository to your desired integrate development environment. Navigate to the following:
