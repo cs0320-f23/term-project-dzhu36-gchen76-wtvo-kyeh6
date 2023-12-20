@@ -16,8 +16,10 @@ import java.util.*;
 
 import okio.Buffer;
 
+/**
+ * Class that stores and calculates nutrition data.
+ */
 public class NutritionDataSource implements Query<List<String>, List<String>> {
-
   /**
    * Stores the data for nutritional guidelines mapping from gender to a hashmap of guidelines
    */
@@ -27,13 +29,19 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
   private List<String> visited;
   private final List<String> growable = parseGrowable();
   private boolean onlyGrowable = false;
+
+  /**
+   * Constructor for NutritionDataSource.
+   *
+   * @param filename - the name of the (daily requirements CSV) file to be parsed.
+   */
   public NutritionDataSource(String filename) {
     try {
       this.foodData = new HashMap<>();
       this.nutritionNeeds = new HashMap<>();
       this.getFoodDatabase();
       CsvParser parser = new CsvParser();
-      parser.parse(filename); // used to be data/nutrition/etc...
+      parser.parse(filename);
       nutritionalRequirements = parser.getTable();
       System.out.println(nutritionalRequirements);
     } catch (DatasourceException e) {
@@ -42,15 +50,13 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
   }
 
   /**
+   * Takes input parameters and then calculates nutrition recommendations based off of them.
    *
-   * @param target - the URI of the ACS API with state and county identifiers (or in the context of
-   *               the redlining data, a type that contains all the parameters to filter the
-   *               redlining data on)
-   * @return
-   * @throws DatasourceException
+   * @param target - a list of input parameters, such as age, height, etc.
+   * @return a list of food recommendations represented as Strings.
+   * @throws DatasourceException if there are parameter-related issues such as a non-numeric age.
    */
   public List<String> query(List<String> target) throws DatasourceException {
-    // note to self: check case where one of these empty
     String weight = target.get(0);
     String height = target.get(1);
     String age = target.get(2);
@@ -59,7 +65,6 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     String growable = target.get(5);
     String foodsString = target.get(6);
 
-//    System.out.println("query before functions");
     this.visited = new ArrayList<>();
     List<String> foodsList = Arrays.asList(foodsString.split("`"));
     this.visited.addAll(foodsList);
@@ -70,33 +75,31 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     } else {
       throw new DatasourceException("Unreasonable growable parameter");
     }
-//      // Calculate Caloric Requirement
-//      // Update nutritionNeeds based on the article and guidelines
-
     try {
-      this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(weight), Integer.parseInt(height), Integer.parseInt(age), gender, activity), gender);
+      Double weight_num = Double.parseDouble(weight);
+      Double height_num = Double.parseDouble(height);
+      Double age_num = Double.parseDouble(age);
+
+      this.calculateRatios(this.calculateCaloricRequirement(weight_num, height_num.intValue(),
+          age_num.intValue(), gender, activity), gender);
     } catch (NumberFormatException e) {
       throw new DatasourceException("Unreasonable weight, height, or age parameter");
     }
-    this.calculateDeficiency(this.visited);
+
+    try {
+      this.calculateDeficiency(this.visited);
+    } catch (NullPointerException e) {
+      throw new DatasourceException("Unrecognized food");
+    }
+
     return this.getRecommendations();
-
-
-
-//    this.calculateRatios(2000, "Male");
-//    System.out.println("after calculating ratios");
-////      // Calculate Deficiencies
-////    this.calculateRatios(this.calculateCaloricRequirement(Double.parseDouble(foods.get(0)), Integer.parseInt(foods.get(1)), Integer.parseInt(foods.get(2)), foods.get(3), foods.get(4)), foods.get(3));
-////    for (String food : foodSet) {
-////      for (String key : this.foodData.get(food).keySet()) {
-////        this.nutritionNeeds.put(key, this.nutritionNeeds.get(key) - this.foodData.get(food).get(key));
-////      }
-////    }
-//      this.calculateDeficiency(this.visited);
-//      System.out.println("query after deficiency");
-//      return this.getRecommendations().toString();
   }
 
+  /**
+   * Retrieves the "score" of a food based off of how many relevant nutrients it can fulfill.
+   *
+   * @return a Map of foods and their scores.
+   */
   private Map<String, Double> getScore() {
     Map<String, Double> scoreMap = new HashMap<>();
     for (String foodKey : this.foodData.keySet()) {
@@ -131,6 +134,11 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     return scoreMap;
   }
 
+  /**
+   * Retrieves recommended foods.
+   *
+   * @return a list of Strings containing food recommendations.
+   */
   private List<String> getRecommendations() {
     List<String> recommendationList = new ArrayList<>();
     Map<String, Double> scoreMap = this.getScore();
@@ -173,14 +181,15 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     return recommendationList;
   }
 
-//  private Map<String, List<String>> getRecommendations() {
-//    // for (String nutrientName:
-//    // while loop until the nutrition Needs value is <= 0,
-//    return new Map<>();
-//  }
   /**
    * Private helper method; throws IOException so different callers can handle differently if
    * needed.
+   *
+   * @param requestURL - the URL to connect to.
+   * @return the HttpURLConnection that was connected to.
+   *
+   * @throws DatasourceException if the connection can't be established.
+   * @throws IOException if the URL can't be opened.
    */
   private static HttpURLConnection connect(URL requestURL) throws DatasourceException, IOException {
     URLConnection urlConnection = requestURL.openConnection();
@@ -196,9 +205,11 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     return clientConnection;
   }
 
-
-
-  // made public for unit testing
+  /**
+   * Retrieves the full database of foods and their nutrients. Public for testing purposes.
+   *
+   * @throws DatasourceException if data can't be retrieved from the nutrients API.
+   */
   public void getFoodDatabase() throws DatasourceException{
     try (Buffer buffer = new Buffer()) {
       Moshi moshi = new Moshi.Builder().build();
@@ -244,16 +255,17 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     }
   }
 
-  // public for testing purposes
+
   /**
-   * Calculates the Caloric Requirements based on input from the frontend
-   * @param weight_kg
-   * @param height_cm
-   * @param age_years
-   * @param gender
-   * @param activity
-   * @return
-   * @throws DatasourceException
+   * Calculates caloric requirements based on input from the frontend. Public for testing purposes.
+   *
+   * @param weight_kg - the input weight in kg.
+   * @param height_cm - the input height in cm.
+   * @param age_years - the input age in years.
+   * @param gender - the input gender.
+   * @param activity - the input activity level.
+   * @return a double representing an appropriate caloric requirement.
+   * @throws DatasourceException if an unrecognized parameter value is inputted (e.g., negative age).
    */
   public double calculateCaloricRequirement(
           double weight_kg, int height_cm, int age_years, String gender, String activity)
@@ -281,9 +293,10 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
   }
 
   /**
-   * Calculates the need for each nutrient per person based on standardized guidelines
-   * @param caloricRequirements
-   * @param gender
+   * Calculates the need for each nutrient per person based on standardized guidelines.
+   *
+   * @param caloricRequirements - the caloric requirements this person needs.
+   * @param gender - the person's gender.
    */
   public void calculateRatios(double caloricRequirements, String gender) {
     // strings to be able to be converted to double, otherwise number format exception
@@ -302,6 +315,11 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     }
   }
 
+  /**
+   * Determines which nutrients a person needs more of in their diet.
+   *
+   * @param foods - a list of foods the person eats.
+   */
   public void calculateDeficiency(List<String> foods){
     //System.out.println("in calculatedeficiency");
     //System.out.println(this.nutritionNeeds);
@@ -329,6 +347,11 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     }
   }
 
+  /**
+   * Parses a file containing only growable foods.
+   *
+   * @return a list of Strings populated by growable foods.
+   */
   public static List<String> parseGrowable() {
     try {
       List<String> list = new ArrayList<>();
@@ -345,10 +368,20 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
     }
   }
 
+  /**
+   * A getter method for our Map of complete food data.
+   *
+   * @return a copy of our foodData Map.
+   */
   public Map<String, Map<String, Double>> getFoodData () {
     return new HashMap<>(this.foodData);
   }
 
+  /***
+   * A getter method for our Map of a person's nutritional needs.
+   *
+   * @return a copy of our nutritionNeeds Map.
+   */
   public Map<String, Double> getNutritionNeeds() {
     return new HashMap<>(this.nutritionNeeds);
   }

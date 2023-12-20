@@ -79,7 +79,7 @@ public class TestPurePlateHandler {
   public void testPurePlateBasic() throws IOException {
     // Multiple foods
     HttpURLConnection loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseMap =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
@@ -90,7 +90,7 @@ public class TestPurePlateHandler {
     assertNotEquals("[]", responseMap.get("recommendations"));
 
     // One food
-    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&foods=Tomato,%20roma");
+    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=yes&foods=Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
