@@ -10,6 +10,7 @@ import {
   TextField
 } from "@mui/material";
 import { getPurePlateData } from "./FetchReccomendations";
+import generatePDF from "./PDF";
 
 function AlgorithmPage() {
 

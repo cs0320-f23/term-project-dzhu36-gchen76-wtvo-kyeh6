@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { mockedRecommendationData } from "../src/pages/AlgorithmPage/MockedResults";
+import { mockedRecommendationData } from "../src/pages/software-components/MockedResults";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:8000/");
@@ -27,7 +27,7 @@ test("intercepts the pureplate request", async ({ page }) => {
 
   // Add your assertions here
   await expect(page.getByRole('heading', { name: 'Weight (kg)' })).toBeVisible
-  
+
 });
 
 test("checking mode starts in brief and can switch between brief and verbose", async ({

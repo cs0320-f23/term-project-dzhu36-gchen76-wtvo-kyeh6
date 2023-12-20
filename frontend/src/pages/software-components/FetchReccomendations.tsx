@@ -16,6 +16,18 @@ function createFoodString(list: string[]) : string{
 
 }
 
+/**
+ * Call the PurePlate server to calculate a list of recommended foods based on demographic information and 
+ * a list of foods that already contribute to their diet
+ * @param weight weight of the individual (in kg)
+ * @param age age of the individual
+ * @param height height of the individual (in cm)
+ * @param gender gender of the individual (male or female)
+ * @param activityLevel the activity level (5 levels)
+ * @param growable whether you are looking specifically for growable foods
+ * @param foods the list of chosen foods
+ * @returns 
+ */
 export async function getPurePlateData(weight: string, age: string, height: string, gender: string, activityLevel: string, growable: string, foods: string[]): Promise<string | string[]> {
     try {
         // return "hi"
@@ -54,9 +66,9 @@ interface SuccessfulRecommendationCall {
 }
 
 /**
- * Checks if a json 
- * @param rjson 
- * @returns 
+ * Checks if the return of the fetch call has the recommended foods
+ * @param rjson the json from the fetch call
+ * @returns true if the json is of the valid format
  */
 function isSuccessfulRecommendationCall(
   rjson: any
