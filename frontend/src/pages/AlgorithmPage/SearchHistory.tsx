@@ -41,15 +41,25 @@ class SearchHistory extends React.Component<SearchHistoryProps> {
 //     // </div>;
 // }
 
-function getResult(commandTuple: (string | string[])[]) {
-  const lastElement = commandTuple[commandTuple.length - 1];
-  if (typeof lastElement === "string") {
-    return lastElement;
-  }
-  console.log("this is the type of lastElement");
-  console.log(typeof lastElement);
-  return (
-    <RecommendationToTable data={lastElement!} />
-  );
+function getResult(historyData: (string | string[])[]) {
+  return historyData.map((data, index) => {
+    if (typeof data === "string") {
+      // For string, return as paragraph
+      return (
+        <div key={index} className="history-entry">
+          <p key={index}>{data}</p>
+        </div>
+      );
+    } else if (Array.isArray(data)) {
+      // For string array, use RecommendationToTable
+      return (
+        <div key={index} className="history-entry">
+          <RecommendationToTable key={index} data={data} />
+        </div>
+      );
+    } else {
+      return <p></p>;
+    }
+  });
 }
 export default SearchHistory;

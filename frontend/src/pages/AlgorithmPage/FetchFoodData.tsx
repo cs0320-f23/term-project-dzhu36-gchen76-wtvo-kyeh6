@@ -4,19 +4,13 @@ import { FormControl, FormGroup, FormControlLabel, Checkbox } from '@mui/materia
 
 const foodsURL = "http://localhost:3233/data?"
 
-function getOuterKeys(data: Map<string, Map<string, Number>>): string[] {
-  return Object.keys(data);
-};
-
 export async function getInitialFood() : Promise<string[]| string>{
     try {
       const data_response = await fetch(`${foodsURL}`);
       const data_json = await data_response.json();
       console.log("food data");
       console.log(data_json.foods);
-      const keys = getOuterKeys(data_json)
-      console.log(keys);
-      return keys;
+      return data_json.foods;
     } catch (err) {
       return "Unable to retrive food data";
     }

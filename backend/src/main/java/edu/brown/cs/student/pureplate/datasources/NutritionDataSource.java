@@ -235,7 +235,7 @@ public class NutritionDataSource implements Query<List<String>, List<String>> {
           for (FoodNutrient nutrient : food.foodNutrients) {
             nutrientAmount.put(nutrient.name, nutrient.amount);
           }
-          this.foodData.put(food.description, nutrientAmount);
+          this.foodData.put(food.description.replace("%", " percent"), nutrientAmount);
         }
         clientConnection.disconnect();
     }

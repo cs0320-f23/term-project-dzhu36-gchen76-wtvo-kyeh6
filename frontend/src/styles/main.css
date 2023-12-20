@@ -207,8 +207,8 @@ h4 {
 .form-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align items to the start of the container */
-  padding: 20px; /* Adjust as needed */
+  align-items: flex-start;
+  padding: 20px; 
   width: 50%;
 }
 
@@ -269,7 +269,7 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  /* transform: translate(px, 320px); */
+
 }
 
 .age-container {
@@ -290,7 +290,6 @@ input [type="radio"] :checked {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: rgb(0, 0, 0);
   width: 400px;
-  /* transform: translate(165px, 0px); */
 }
 
 .Height-container {
@@ -356,8 +355,23 @@ input [type="radio"] :checked {
 input [type="radio"] :checked {
   font-size: larger;
 }
+.selectFoods{
+  font-family: BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  transform: translate(0px, -350px);
+  color: rgb(0, 0, 0);
+  font-size: 40px;
+  z-index: 1000;
+  font-weight: 500;
+
+}
 .food-container {
   transform: translate(0px, -350px);
+  background: #f4f4f4;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  height: 200px; /* maximum height of the box, feel free to change this! */
+  width: 400px;
+  overflow-y: scroll;
 }
 
 /*Search History */
@@ -406,6 +420,18 @@ input [type="radio"] :checked {
   height: 400px; /* maximum height of the box, feel free to change this! */
   width: 400px;
   overflow-y: scroll;
+}
+
+.history-entry {
+  margin-bottom: 20px; /* Space between entries */
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f4f4f4; /* Light gray background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds depth */
+}
+
+.history-entry:last-child {
+  margin-bottom: 0; /* Remove bottom margin for the last entry */
 }
 /* .dropdown-check-list {
   display: inline-block;

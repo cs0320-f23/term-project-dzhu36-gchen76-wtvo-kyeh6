@@ -10,16 +10,12 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Autocomplete,
+  TextField
 } from "@mui/material";
 import { getPurePlateData } from "./FetchReccomendations";
 
 function AlgorithmPage() {
-  /**
-   * Defines how a REPL function should look
-   */
-  interface REPLFunction {
-    (args: string[]): Promise<string | string[][]>;
-  }
 
   const [age, setAge] = useState("");
   const [weight, setWeight] = useState("");
@@ -51,35 +47,43 @@ function AlgorithmPage() {
 
   function handleWeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
-    if (!isNaN(parseFloat(value)) && parseFloat(value).toString() === value) {
+    if (value !== "" && !isNaN(parseFloat(value)) && parseFloat(value).toString() === value
+    ) {
       setWeight(value); // Update the state if the input is a valid number
-    } else {
+    } else if (value !== "") {
       setWeight("");
       window.alert("Value entered is not a valid number");
-      // setError('Please enter a valid number for age');
+    } else {
+      // Handle the case where the input is empty
+      setWeight("");
     }
   }
 
   function handleHeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
-    if (!isNaN(parseInt(value)) && parseInt(value).toString() === value) {
+    if (
+      value !== "" && !isNaN(parseInt(value)) &&
+      parseInt(value).toString() === value
+    ) {
       setHeight(value); // Update the state if the input is a valid number
-    } else {
+    } else if (value !== "") {
       console.log("error");
       setHeight("");
       window.alert("Value entered is not a valid number");
+    } else {
+      setHeight("")
     }
   }
 
   function handleAgeChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
-    if (typeof value === "string") {
-    }
-    if (!isNaN(parseInt(value)) && parseInt(value).toString() === value) {
+    if (value !== "" && !isNaN(parseInt(value)) && parseInt(value).toString() === value) {
       setAge(value);
-    } else {
+    } else if (value !== "") {
       setAge("");
       window.alert("Value entered is not a valid age");
+    } else {
+      setAge("")
     }
   }
 
@@ -96,21 +100,6 @@ function AlgorithmPage() {
   async function handleSubmit(): Promise<void> {
     console.log("Please print something out");
 
-    // if ()
-    // if ( && formData.textbox2 && formData.checkbox) {
-    // set history later
-    // if (tokens[0] === "broadband") {
-    //   props.setHistory([
-    //     ...props.history,
-    //     [commandString, await getResponse(tokens, { setMode: props.setMode })],
-    //   ]);
-    // } else {
-    //   props.setSearch(tokens[0]);
-    //   props.setHistory([
-    //     ...props.history,
-    //     [commandString, "searched for " + tokens[0]],
-    //   ]);
-    // }
     // TODO: manually replace spaces with %20
     console.log(weight);
     console.log(height);
@@ -123,7 +112,8 @@ function AlgorithmPage() {
       age !== "" &&
       gender !== "" &&
       activityLevel !== "" &&
-      growable !== ""
+      growable !== "" &&
+      selectedFoods.length > 0
     ) {
       console.log(
         await getPurePlateData(
@@ -133,7 +123,7 @@ function AlgorithmPage() {
           gender,
           activityLevel,
           growable,
-          "Carrots,%20baby,%20raw`Tomato,%20roma"
+          selectedFoods
         )
       );
       console.log("test");
@@ -146,7 +136,7 @@ function AlgorithmPage() {
           gender,
           activityLevel,
           growable,
-          "Carrots,%20baby,%20raw`Tomato,%20roma"
+          selectedFoods
         ),
       ]);
     } else {
@@ -292,7 +282,21 @@ function AlgorithmPage() {
           <label htmlFor="rb2"> No </label>
         </div>
         <div className="food-container">
-          <h1>Select Foods</h1>
+          <Autocomplete
+            multiple
+            id="foods-autocomplete"
+            options={foodOptions}
+            value={selectedFoods}
+            onChange={(event, newValue) => setSelectedFoods(newValue)}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option}
+            renderInput={(params) => (
+              <TextField {...params} variant="standard" label="Select Foods" />
+            )}
+          />
+        </div>
+        <div className="selectFoods">Select Foods</div>
+        <div className="food-container">
           <FormControl component="fieldset">
             <FormGroup>
               {foodOptions.map((food) => (

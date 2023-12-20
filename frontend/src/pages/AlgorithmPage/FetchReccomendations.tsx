@@ -1,10 +1,24 @@
 const recommendationsURL = "http://localhost:3233/pureplate?"
 
-export async function getPurePlateData(weight: string, age: string, height: string, gender: string, activityLevel: string, growable: string, foods: string): Promise<string | string[]> {
+function createFoodString(list: string[]) : string{
+  let condensedList = ""
+  condensedList = list[0]
+  for (let i = 1; i < list.length - 1; i++) {
+    condensedList = condensedList + list[i] + "`";
+  }
+  condensedList += list[list.length - 1]
+  return condensedList.replace(/ /g, "%20").trim();
+
+}
+export async function getPurePlateData(weight: string, age: string, height: string, gender: string, activityLevel: string, growable: string, foods: string[]): Promise<string | string[]> {
     try {
         // return "hi"
+        const foodList = createFoodString(foods);
         const pureplate_response = await fetch(
-          `${recommendationsURL}weight=${weight}&height=${height}&age=${age}&gender=${gender}&activity=${activityLevel}&growable=${growable}&foods=${foods}`
+          `${recommendationsURL}weight=${weight}&height=${height}&age=${age}&gender=${gender}&activity=${activityLevel}&growable=${growable}&foods=${createFoodString(foods)}`
+        );
+        console.log(
+          `${recommendationsURL}weight=${weight}&height=${height}&age=${age}&gender=${gender}&activity=${activityLevel}&growable=${growable}&foods=${createFoodString(foods)}`
         );
         const pureplate_json = await pureplate_response.json();
         if (!isSuccessfulRecommendationCall(pureplate_json)) {
@@ -15,6 +29,9 @@ export async function getPurePlateData(weight: string, age: string, height: stri
         }
         const recommendations = pureplate_json.recommendations;
         console.log(typeof recommendations);
+        if (recommendations.length === 0 && typeof recommendations === "string" && Array.isArray(recommendations)) {
+          recommendations.push("You have met all required daily nutrient needs.")
+        }
         return recommendations;
         // let state = area_api_json.results[0].state_name;
         // let county = area_api_json.results[0].county_name;
