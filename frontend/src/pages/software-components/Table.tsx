@@ -9,9 +9,9 @@ interface Data {
 }
 
 /**
- * Converts a 2D array of strings into a table component
+ * Converts an array of strings into a table component
  * 
- * @param - prop that contains a 2D array
+ * @param - prop that contains an array of strings
  */
 export function RecommendationToTable(props: Data) {
   console.log("these are the props");

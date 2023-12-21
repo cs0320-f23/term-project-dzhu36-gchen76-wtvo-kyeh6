@@ -3,15 +3,19 @@ import React, { useState, useEffect } from "react";
 import Header from "../../Header";
 import SearchHistory from "./SearchHistory";
 import { getInitialFood } from "./FetchFoodData";
-import { Dispatch, SetStateAction } from "react";
+
 import { ChangeEvent } from "react";
 import {
   Autocomplete,
   TextField
 } from "@mui/material";
 import { getPurePlateData } from "./FetchReccomendations";
-import generatePDF from "./PDF";
 
+
+/**
+ * This returns a display for the software page
+ * @returns an HTML element representing the entire software page
+ */
 function AlgorithmPage() {
 
   const [age, setAge] = useState("");
@@ -27,6 +31,7 @@ function AlgorithmPage() {
   function handleActivityLevelChange(event: ChangeEvent<HTMLInputElement>) {
     setActivityLevel(event.target.value);
   }
+
   //This function handles the changing of gender checkbox
   function handleGenderChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
@@ -37,6 +42,7 @@ function AlgorithmPage() {
       window.alert("Please select a gender");
     }
   }
+
   //This function handles the changing of weight vale
   function handleWeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
@@ -51,6 +57,7 @@ function AlgorithmPage() {
       setWeight("");
     }
   }
+
   //This function handles the changing of height value
   function handleHeightChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
@@ -67,6 +74,7 @@ function AlgorithmPage() {
       setHeight("")
     }
   }
+
   //This function handles the age change
   function handleAgeChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
@@ -79,6 +87,7 @@ function AlgorithmPage() {
       setAge("")
     }
   }
+  
   // This function handles checking the growable
   function handleGrowableChange(event: ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
@@ -90,15 +99,12 @@ function AlgorithmPage() {
     }
   }
 
+  /**
+   * This function handles the submitting of the input. If any of the input is not filled, submit
+   * does not call the backend. If all inputs are filled and valid, the function fetches from the backend
+   */
   async function handleSubmit(): Promise<void> {
-    console.log("Please print something out");
-
-    // TODO: manually replace spaces with %20
-    console.log(weight);
-    console.log(height);
-    console.log(age);
-    console.log(gender);
-    console.log(activityLevel);
+    
     if (
       weight !== "" &&
       height !== "" &&
@@ -108,18 +114,6 @@ function AlgorithmPage() {
       growable !== "" &&
       selectedFoods.length > 0
     ) {
-      console.log(
-        await getPurePlateData(
-          weight,
-          age,
-          height,
-          gender,
-          activityLevel,
-          growable,
-          selectedFoods
-        )
-      );
-      console.log("test");
       setHistory([
         ...history,
         await getPurePlateData(
@@ -140,6 +134,7 @@ function AlgorithmPage() {
   const [foodOptions, setFoodOptions] = useState<string[]>([""]);
   const [selectedFoods, setSelectedFoods] = useState<string[]>([""]);
 
+  // Use Effect used in the autocomplete box
   useEffect(() => {
     const fetchInitialFood = async () => {
       const initialFoodData: string | string[] = await getInitialFood();
@@ -274,24 +269,6 @@ function AlgorithmPage() {
             )}
           />
         </div>
-        {/* <div className="food-container">
-          <FormControl component="fieldset">
-            <FormGroup>
-              {foodOptions.map((food) => (
-                <FormControlLabel
-                  key={food}
-                  control={
-                    <Checkbox
-                      checked={selectedFoods.includes(food)}
-                      onChange={() => handleFoodChange(food)}
-                    />
-                  }
-                  label={food}
-                />
-              ))}
-            </FormGroup>
-          </FormControl>
-        </div> */}
         <button
           aria-label="Submit Button"
           id="Submit_Button"

@@ -2,6 +2,7 @@
 
 import React from "react";
 
+// Used on the main page to divide the Home and Meet the Team sections
 const Pagebreaker = () => {
   {
     return (

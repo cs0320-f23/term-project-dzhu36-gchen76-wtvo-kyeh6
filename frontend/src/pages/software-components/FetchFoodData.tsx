@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-
 const foodsURL = "http://localhost:3233/data?"
 
+/**
+ *  Calls the backend server for a list of foods for the purposes of displaying on the frontend
+ * @returns A list of strings representing the food database (all foods used for calculations) from the backend
+ */
 export async function getInitialFood() : Promise<string[]| string>{
     try {
       const data_response = await fetch(`${foodsURL}`);
@@ -12,25 +14,4 @@ export async function getInitialFood() : Promise<string[]| string>{
     } catch (err) {
       return "Unable to retrive food data";
     }
-}
-
-// export default function YourComponent() {
-//   const [foodOptions, setFoodOptions] = useState([]);
-
-//   useEffect(() => {
-//     const fetchFoodOptions = async () => {
-//       try {
-//         const initialFood:string | string[] = await getInitialFood();
-//         setFoodOptions(initialFood);
-//       } catch (error) {
-//         console.error('Error fetching food options:', error);
-//       }
-//     };
-
-//     fetchFoodOptions();
-//   }, []);
-// }
-// Type Narrowing of response here
-interface SuccessfulFoodDataCall {
-  results: string[];
 }

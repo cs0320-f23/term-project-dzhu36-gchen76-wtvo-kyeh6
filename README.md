@@ -15,7 +15,6 @@ In our frontend we decided to have a few different design choices these inclcude
 ### Errors and Bugs
 There are no current errors or bugs as of December 20th, 2023.  
 ## Backend
-### Design Choices
 * On our backend api server, we have two main endpoints (food data and pure plate). 
 * The food data handler is used
 by our frontend to retrieve a list of valid foods to select from. The pureplate handler is what actually calculates the recommended list of foods. 

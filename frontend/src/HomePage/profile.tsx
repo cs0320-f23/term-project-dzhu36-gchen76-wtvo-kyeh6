@@ -5,6 +5,7 @@ import wilsonPhoto from "../public/IMG_1095.jpg";
 import kylesPhoto from "../public/1696464658844.png";
 import danielsPhoto from "../public/square-1488906206-daniel-craig.jpg";
 import gracesPhoto from "../public/78745131.jpg";
+// This returns HTML for the profile descriptions and images on the meet the team page
 const Profile = () => {
   {
     return (

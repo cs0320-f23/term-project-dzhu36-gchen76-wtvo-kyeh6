@@ -1,21 +1,21 @@
 import jsPDF from "jspdf";
 
+// PDF generated that was not implemented before demo
 const generatePDF = (content: string[][]) => {
   const doc = new jsPDF();
 
-  // Add text to PDF. This can be customized based on your content
-  let currentYPosition = 10; // Initial Y position for the first line
+  // Add text to PDF.
+  let currentYPosition = 10; 
 
   content.forEach((lineGroup) => {
     lineGroup.forEach((line) => {
       doc.text(line, 10, currentYPosition);
-      currentYPosition += 10; // Increase Y position for each new line
+      currentYPosition += 10; 
     });
 
-    currentYPosition += 10; // Optionally add extra space between groups
+    currentYPosition += 10; // Add extra space between groups
   });
 
-  // Save the PDF with a filename
   doc.save("download.pdf");
 };
 
