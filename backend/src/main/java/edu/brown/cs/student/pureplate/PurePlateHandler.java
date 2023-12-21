@@ -14,12 +14,11 @@ import spark.Response;
 import spark.Route;
 
 /**
- * A class that handles calculating nutritional deficits and suggestions, and then depicting the
- * output data on the pureplate endpoint, based on input data.
+ * A class that depicts nutritional data based on url input on the "pureplate" endpoint.
  */
 public class PurePlateHandler implements Route {
 
-   private static Query<List<String>, List<String>> cache;
+  private static Query<List<String>, List<String>> cache;
 
   /**
    * Constructor for PurePlateHandler.
@@ -34,11 +33,10 @@ public class PurePlateHandler implements Route {
    * @param request  The request object providing information about the HTTP request
    * @param response The response object providing functionality for modifying the response
    * @return a serialized Map that contains the necessary output the user will see.
-   * @throws Exception if any Exception is thrown in the process.
    */
   @Override
-  public Object handle(Request request, Response response) throws Exception {
-    Set<String> params = request.queryParams(); // might not use
+  public Object handle(Request request, Response response) {
+    Set<String> params = request.queryParams();
     Map<String, Object> results = new HashMap<>();
     String weight = request.queryParams("weight");
     String height = request.queryParams("height");
@@ -48,11 +46,13 @@ public class PurePlateHandler implements Route {
     String growable = request.queryParams("growable");
     String foods = request.queryParams("foods");
 
-    if (weight == null || height == null || age == null || gender == null || activity == null || growable == null || foods == null) {
+    if (weight == null || height == null || age == null || gender == null || activity == null
+        || growable == null || foods == null) {
       results.put("result", "error_bad_request");
       results.put("message", "missing request parameter");
       return this.serialize(results);
-    } else if (weight.equals("") || height.equals("") || age.equals("") || gender.equals("") || activity.equals("") || growable.equals("") || foods.equals("")) {
+    } else if (weight.equals("") || height.equals("") || age.equals("") || gender.equals("")
+        || activity.equals("") || growable.equals("") || foods.equals("")) {
       results.put("result", "error_bad_request");
       results.put("message", "empty request parameter");
       return this.serialize(results);
@@ -65,7 +65,8 @@ public class PurePlateHandler implements Route {
     }
 
     try {
-      results.put("recommendations", cache.query(List.of(weight, height, age, gender, activity, growable, foods)));
+      results.put("recommendations",
+          cache.query(List.of(weight, height, age, gender, activity, growable, foods)));
       results.put("result", "success");
     } catch (DatasourceException e) {
       results.put("result", "error_bad_request");

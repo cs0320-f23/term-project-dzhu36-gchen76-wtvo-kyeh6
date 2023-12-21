@@ -9,8 +9,8 @@ import java.util.List;
 import spark.Spark;
 
 /**
- * Top-level class that contains the main() method which starts Spark and runs the pureplate
- * handler through a PurePlateServer instance.
+ * Top-level class that contains the main() method which starts Spark and runs the pureplate and
+ * data handlers through a PurePlateServer instance.
  */
 public class PurePlateServer {
 
@@ -41,7 +41,8 @@ public class PurePlateServer {
    * @param args - an array of program arguments.
    */
   public static void main(String[] args) {
-    NutritionDataSource dataSource = new NutritionDataSource("./data/nutrition/daily_requirements.csv");
+    NutritionDataSource dataSource = new NutritionDataSource(
+        "./data/nutrition/daily_requirements.csv");
     new PurePlateServer(new Cache(dataSource, 100, 1000), dataSource);
   }
 }

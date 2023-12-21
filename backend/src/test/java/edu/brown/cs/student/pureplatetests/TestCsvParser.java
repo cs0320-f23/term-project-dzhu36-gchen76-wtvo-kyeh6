@@ -6,8 +6,16 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.testng.Assert;
 
+/**
+ * Tests the functionality of the CsvParser class.
+ */
 public class TestCsvParser {
 
+  /**
+   * Tests the functionality of the parse method.
+   *
+   * @throws DatasourceException if there are any issues with parsing a CSV file.
+   */
   @Test
   public void testParse() throws DatasourceException {
     CsvParser parser = new CsvParser();

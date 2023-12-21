@@ -1,6 +1,8 @@
 package edu.brown.cs.student.pureplate.datasources;
 
-/** Exception that is thrown when an error is encountered when getting data from the API. */
+/**
+ * Exception that is thrown when an error is encountered when getting data from the API.
+ */
 public class DatasourceException extends Exception {
 
   /**

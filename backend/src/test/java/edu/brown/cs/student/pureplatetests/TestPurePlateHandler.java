@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -45,7 +44,8 @@ public class TestPurePlateHandler {
    */
   @BeforeEach
   public void setup() throws IOException {
-    Spark.get("/pureplate", new PurePlateHandler(new NutritionDataSource("data/nutrition/daily_requirements.csv")));
+    Spark.get("/pureplate",
+        new PurePlateHandler(new NutritionDataSource("data/nutrition/daily_requirements.csv")));
     Spark.awaitInitialization();
     Moshi moshi = new Moshi.Builder().build();
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
@@ -75,11 +75,18 @@ public class TestPurePlateHandler {
     clientConnection.connect();
     return clientConnection;
   }
+
+  /**
+   * Tests that the handler returns expected output when basic URL parameters are provided.
+   *
+   * @throws IOException if there are problems connecting to the endpoint.
+   */
   @Test
   public void testPurePlateBasic() throws IOException {
     // Multiple foods
     HttpURLConnection loadConnection =
-        tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
+        tryRequest(
+            "pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=no&foods=Carrots,%20baby,%20raw`Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     Map<String, Object> responseMap =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
@@ -89,11 +96,11 @@ public class TestPurePlateHandler {
     assertNotEquals("[]", responseMap.get("recommendations"));
 
     // One food
-    loadConnection = tryRequest("pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=yes&foods=Tomato,%20roma");
+    loadConnection = tryRequest(
+        "pureplate?weight=10&height=10&age=10&gender=male&activity=very%20active&growable=yes&foods=Tomato,%20roma");
     assertEquals(200, loadConnection.getResponseCode());
     responseMap = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
     assertEquals(2, responseMap.size());
-    System.out.println(responseMap);
     assertEquals(Set.of("result", "recommendations"), responseMap.keySet());
     assertEquals("success", responseMap.get("result"));
     assertNotEquals("[]", responseMap.get("recommendations"));

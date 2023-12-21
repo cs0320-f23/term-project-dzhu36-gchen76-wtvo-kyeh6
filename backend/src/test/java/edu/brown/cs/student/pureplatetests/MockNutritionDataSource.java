@@ -1,15 +1,11 @@
 package edu.brown.cs.student.pureplatetests;
 
-
 import edu.brown.cs.student.pureplate.datasources.CsvParser;
 import edu.brown.cs.student.pureplate.datasources.DatasourceException;
 import edu.brown.cs.student.pureplate.datasources.Query;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,7 +16,12 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+/**
+ * A class that mocks NutritionDataSource such that mocked data instead of API-queried data
+ * populates the instance variable that stores food nutrient data (foodData).
+ */
 public class MockNutritionDataSource implements Query<List<String>, List<String>> {
+
   private static Map<String, Map<String, Double>> nutritionalRequirements;
   private Map<String, Double> nutritionNeeds;
   private Map<String, Map<String, Double>> foodData;
@@ -28,6 +29,11 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
   private final List<String> growable = parseGrowable();
   private boolean onlyGrowable = false;
 
+  /**
+   * Constructor for MockNutritionDataSource.
+   *
+   * @param filename - the filename of a daily nutritional requirements CSV file.
+   */
   public MockNutritionDataSource(String filename) {
     try {
       this.foodData = new HashMap<>();
@@ -42,12 +48,11 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
   }
 
   /**
+   * Takes input parameters and then calculates nutrition recommendations based off of them.
    *
-   * @param target - the URI of the ACS API with state and county identifiers (or in the context of
-   *               the redlining data, a type that contains all the parameters to filter the
-   *               redlining data on)
-   * @return
-   * @throws DatasourceException
+   * @param target - a list of input parameters, such as age, height, etc.
+   * @return a list of food recommendations represented as Strings.
+   * @throws DatasourceException if there are parameter-related issues such as a non-numeric age.
    */
   public List<String> query(List<String> target) throws DatasourceException {
     String weight = target.get(0);
@@ -77,9 +82,6 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
       this.calculateRatios(this.calculateCaloricRequirement(weight_num, height_num.intValue(),
           age_num.intValue(), gender, activity), gender);
     } catch (NumberFormatException e) {
-      System.out.println("error message");
-      System.out.println(e.getMessage());
-      System.out.println(e.getClass());
       throw new DatasourceException("Unreasonable weight, height, or age parameter");
     }
     try {
@@ -91,6 +93,9 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
     return this.getRecommendations();
   }
 
+  /**
+   * Populates the instance variable foodData with mocked nutrition data.
+   */
   private void getFoodDatabase() {
     this.foodData.put("Carrots, baby, raw", new HashMap<>());
     this.foodData.get("Carrots, baby, raw").put("Water", 89.3);
@@ -113,6 +118,11 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
     this.foodData.get("Blackeye pea, dry").put("Potassium, K", 361.0);
   }
 
+  /**
+   * Retrieves the "score" of a food based off of how many relevant nutrients it can fulfill.
+   *
+   * @return a Map of foods and their scores.
+   */
   private Map<String, Double> getScore() {
     Map<String, Double> scoreMap = new HashMap<>();
     for (String foodKey : this.foodData.keySet()) {
@@ -133,18 +143,23 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
       }
       if (this.onlyGrowable) {
         scoreMap.put(foodKey, counter > 0 ? ((this.visited.contains(foodKey) ? -(counter / score) :
-            (!this.growable.contains(foodKey) ? -(counter / score) : score / counter ))) : 1000.0); // if the food doesn't have the nutrient
-        System.out.println(scoreMap);
+            (!this.growable.contains(foodKey) ? -(counter / score) : score / counter)))
+            : 1000.0); // if the food doesn't have the nutrient
       } else {
-        scoreMap.put(foodKey, counter > 0 ? (this.visited.contains(foodKey) ? -(counter / score) : score / counter) : 1000.0);
-        System.out.println(scoreMap);
+        scoreMap.put(foodKey,
+            counter > 0 ? (this.visited.contains(foodKey) ? -(counter / score) : score / counter)
+                : 1000.0);
       }
     }
     return scoreMap;
   }
 
+  /**
+   * Retrieves recommended foods.
+   *
+   * @return a list of Strings containing food recommendations.
+   */
   private List<String> getRecommendations() {
-    // maybe dont use mocked csv but replace this func instead
     List<String> recommendationList = new ArrayList<>();
     Map<String, Double> scoreMap = this.getScore();
     // populate priority queue using getScore
@@ -152,7 +167,7 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
         Comparator.comparingDouble(scoreMap::get));
     while (!this.nutritionNeeds.entrySet().stream()
         .filter(entry -> !entry.getKey().equals("Calorie Level Assessed"))
-        .allMatch(entry -> entry.getValue() <= 0.0)){
+        .allMatch(entry -> entry.getValue() <= 0.0)) {
       // add all foods to priority queue and pull the first food out and add to returnlist
       priorityFoods.addAll(this.foodData.keySet());
 
@@ -178,32 +193,16 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
   }
 
   /**
-   * Private helper method; throws IOException so different callers can handle differently if
-   * needed.
-   */
-  private static HttpURLConnection connect(URL requestURL) throws DatasourceException, IOException {
-    URLConnection urlConnection = requestURL.openConnection();
-    if (!(urlConnection instanceof HttpURLConnection clientConnection)) {
-      throw new DatasourceException("unexpected: result of connection wasn't HTTP");
-    }
-    // may need to typecast
-    clientConnection.connect();
-    if (clientConnection.getResponseCode() != 200) {
-      throw new DatasourceException(
-          "unexpected: API connection not success status " + clientConnection.getResponseMessage());
-    }
-    return clientConnection;
-  }
-
-  /**
-   * Calculates the Caloric Requirements based on input from the frontend
-   * @param weight_kg
-   * @param height_cm
-   * @param age_years
-   * @param gender
-   * @param activity
-   * @return
-   * @throws DatasourceException
+   * Calculates caloric requirements based on inputted values.
+   *
+   * @param weight_kg - the input weight in kg.
+   * @param height_cm - the input height in cm.
+   * @param age_years - the input age in years.
+   * @param gender    - the input gender.
+   * @param activity  - the input activity level.
+   * @return a double representing an appropriate caloric requirement.
+   * @throws DatasourceException if an unrecognized parameter value is inputted (e.g., negative
+   *                             age).
    */
   public double calculateCaloricRequirement(
       double weight_kg, int height_cm, int age_years, String gender, String activity)
@@ -226,36 +225,37 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
       case "moderately active" -> caloricRequirement * 1.55;
       case "very active" -> caloricRequirement * 1.725;
       case "extra active" -> caloricRequirement * 1.9;
-      default -> caloricRequirement*=1.0;
+      default -> caloricRequirement *= 1.0;
     };
   }
 
   /**
-   * Calculates the need for each nutrient per person based on standardized guidelines
-   * @param caloricRequirements
-   * @param gender
+   * Calculates the need for each nutrient per person based on standardized guidelines.
+   *
+   * @param caloricRequirements - the caloric requirements this person needs.
+   * @param gender              - the person's gender.
    */
   public void calculateRatios(double caloricRequirements, String gender) {
-    // strings to be able to be converted to double, otherwise number format exception
-    // check csv file
     gender = gender.toLowerCase();
 
-    double caloricRatio = caloricRequirements / this.nutritionalRequirements.get(gender).get("Calorie Level Assessed");
+    double caloricRatio = caloricRequirements / this.nutritionalRequirements.get(gender)
+        .get("Calorie Level Assessed");
 
     for (String key : this.nutritionalRequirements.get(gender).keySet()) {
-      this.nutritionNeeds.put(key, this.nutritionalRequirements.get(gender).get(key) / caloricRatio);
+      this.nutritionNeeds.put(key,
+          this.nutritionalRequirements.get(gender).get(key) / caloricRatio);
     }
   }
 
-  public void calculateDeficiency(List<String> foods){
-    System.out.println("fooddata");
-    System.out.println(this.foodData);
-
+  /**
+   * Determines which nutrients a person needs more of in their diet.
+   *
+   * @param foods - a list of foods (Strings) the person eats.
+   */
+  public void calculateDeficiency(List<String> foods) {
     Set<String> foodSet = new HashSet<>(foods);
 
     for (String food : foodSet) {
-      System.out.println("In outer for loop " + food);
-      System.out.println(this.foodData.get(food).keySet());
       for (String key : this.nutritionNeeds.keySet()) {
 
         // correctly assigns the nutrition value for the food
@@ -270,10 +270,16 @@ public class MockNutritionDataSource implements Query<List<String>, List<String>
     }
   }
 
+  /**
+   * Parses a file containing only growable foods.
+   *
+   * @return a list of Strings populated by growable foods.
+   */
   public static List<String> parseGrowable() {
     try {
       List<String> list = new ArrayList<>();
-      BufferedReader bufferedReader = new BufferedReader(new FileReader("data/nutrition/growable.txt"));
+      BufferedReader bufferedReader = new BufferedReader(
+          new FileReader("data/nutrition/growable.txt"));
       String currentFileLine = bufferedReader.readLine();
       while (currentFileLine != null) {
         list.add(currentFileLine);

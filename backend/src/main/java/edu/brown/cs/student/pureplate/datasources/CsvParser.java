@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 /***
- * Class that parses the dairy requirements CSV.
+ * Class that parses the daily requirements CSV.
  */
 public class CsvParser {
+
   private Map<String, Map<String, Double>> table;
 
   /**
@@ -52,7 +53,8 @@ public class CsvParser {
 
   /**
    * Returns a copy of the instance variable table that stores the CSV file contents.
-   * @return a copy of this.table.
+   *
+   * @return a copy of the "table" instance variable.
    */
   public Map<String, Map<String, Double>> getTable() {
     return new HashMap<>(this.table);

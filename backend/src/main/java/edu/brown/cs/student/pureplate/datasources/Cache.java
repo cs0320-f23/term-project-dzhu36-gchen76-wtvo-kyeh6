@@ -10,9 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.simple.parser.ParseException;
 
 /**
- * Like the class ApiCall, this class queries the ACS API and retrieves the broadband access
- * percentage for a URI containing specific state and county identifiers. Unlike ApiCall, this class
- * stores previous API requests in a cache.
+ * This class queries the specified API and stores the result of that query.
  */
 public class Cache implements Query<List<String>, List<String>> {
 
@@ -20,9 +18,9 @@ public class Cache implements Query<List<String>, List<String>> {
   private final LoadingCache<List<String>, List<String>> cache;
 
   /**
-   * Constructor for CachedApiCall that establishes the cache.
+   * Constructor for Cache that establishes the cache.
    *
-   * @param toWrap        - a Query that retrieves broadband percentages from the ACS API
+   * @param toWrap        - a Query that retrieves data from the specified API.
    * @param maxEntries    - the maximum number of entries the cache can store at a time
    * @param maxStorageMin - how long entries remain in the cache (in minutes)
    */
@@ -35,11 +33,6 @@ public class Cache implements Query<List<String>, List<String>> {
             .recordStats()
             .build(
                 new CacheLoader<>() {
-//                  @Override
-//                  public List<String> load(List<String> strings) throws Exception {
-//                    return null;
-//                  }
-
                   @Override
                   public List<String> load(List<String> key)
                       throws URISyntaxException, IOException, InterruptedException, ParseException, DatasourceException {
@@ -51,10 +44,10 @@ public class Cache implements Query<List<String>, List<String>> {
   }
 
   /**
-   * Retrieves the broadband percentage associated with the provided target URI to query to.
+   * Retrieves the intended data from an API associated with the provided target URI to query to.
    *
    * @param target - the API URI to query to
-   * @return the target's corresponding String broadband percentage
+   * @return the target's corresponding retrieved data.
    */
   @Override
   public List<String> query(List<String> target) {
@@ -63,5 +56,4 @@ public class Cache implements Query<List<String>, List<String>> {
     System.out.println(this.cache.stats());
     return result;
   }
-
 }
